@@ -1,0 +1,25 @@
+{
+  "name": "axcStudios — Games Store",
+  "short_name": "axcStudios",
+  "description": "Estudio independiente de videojuegos web: Games Store con más de 20 títulos gratis y axcOS, el sistema operativo web.",
+  "start_url": "https://axcgamestudios.github.io/axcStudios/",
+  "scope": "https://axcgamestudios.github.io/axcStudios/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "images/logo.png",
+      "sizes": "1324x1188",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/logo.png",
+      "sizes": "1324x1188",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
