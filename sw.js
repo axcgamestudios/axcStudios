@@ -1,7 +1,7 @@
 /* axcStudios — Service Worker
-   Da soporte PWA (instalación como app real) a las 3 apps del repo:
+   Da soporte PWA (instalación OPCIONAL como app) a las 3 apps del repo:
    index.html (sitio), store.html (tienda) y axcos.html (sistema operativo). */
-const CACHE = 'axcstudios-v4';
+const CACHE = 'axcstudios-v5';
 const CORE = [
   './',
   './index.html',

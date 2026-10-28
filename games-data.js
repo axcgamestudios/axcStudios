@@ -56,7 +56,8 @@ window.axcRenderGames = function (gridEl, opts) {
   gridEl.querySelectorAll('[data-play]').forEach(b => {
     b.addEventListener('click', () => {
       const g = window.AXC_GAMES.find(x => x.id === b.dataset.play);
-      if (g && opts.onPlay) opts.onPlay(g);
+      /* pasa también la tarjeta: la animación FLIP vuela desde ahí */
+      if (g && opts.onPlay) opts.onPlay(g, b.closest('.game-card') || b);
     });
   });
 };

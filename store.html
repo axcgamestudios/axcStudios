@@ -37,7 +37,9 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
 .bg-vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 90% at 50% 0%,transparent 55%,rgba(4,5,10,.75) 100%)}
 
 .topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;padding:13px 24px;
-  background:rgba(8,9,14,.6);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+  background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(10,13,24,.44) 60%);
+  backdrop-filter:blur(26px) saturate(185%);-webkit-backdrop-filter:blur(26px) saturate(185%);
+  border-bottom:1px solid rgba(255,255,255,.09);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 12px 40px rgba(0,0,0,.35)}
 .brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.02rem}
 .brand img{width:34px;height:34px;border-radius:10px;box-shadow:0 0 22px rgba(46,124,246,.5)}
 .brand em{font-style:normal;color:var(--accent)}
@@ -87,7 +89,7 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
 .chip:hover{color:#fff;border-color:rgba(46,124,246,.5)}
 .chip.on{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(46,124,246,.4)}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.game-card{border-radius:20px;overflow:hidden;background:var(--bg-card);border:1px solid var(--border);transition:all .45s var(--ease-out);display:flex;flex-direction:column}
+.game-card{border-radius:20px;overflow:hidden;background:rgba(22,22,27,.55);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:all .45s var(--ease-out);display:flex;flex-direction:column}
 .game-card:hover{transform:translateY(-8px);border-color:rgba(46,124,246,.5);box-shadow:0 26px 60px rgba(0,0,0,.5)}
 .game-cover{position:relative;aspect-ratio:3/4;overflow:hidden}
 .game-cover img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
@@ -148,18 +150,18 @@ footer a:hover{color:var(--accent)}
     <div>
       <div class="kicker">Games Store · axcStudios</div>
       <h1>Tu tienda de juegos web</h1>
-      <p>20+ juegos gratis del estudio. Con sesión iniciada puedes ver el catálogo completo; para <strong>jugar</strong>, instala esta app y los juegos correrán dentro, a pantalla completa.</p>
+      <p>20+ juegos gratis del estudio. Con sesión iniciada ves el catálogo y <strong>los juegos corren aquí mismo</strong>, a pantalla completa — instalar la app es <strong>opcional</strong>.</p>
     </div>
     <div class="hbadges">
       <span class="hbadge" id="countBadge">20 juegos</span>
       <span class="hbadge">🔒 <b>Sesión</b> para ver</span>
-      <span class="hbadge">📦 <b>App</b> para jugar</span>
+      <span class="hbadge">🎮 <b>Juega aquí mismo</b></span>
     </div>
   </div>
 
   <div class="banner-install" id="bannerInstall">
-    <b>📦 Juega dentro de la app</b>
-    <p>Instala <strong>axcStudios Games</strong> como aplicación: los juegos se abren a pantalla completa, sin barra del navegador, con tu sesión guardada.</p>
+    <b>📦 ¿La quieres en tu escritorio?</b>
+    <p>Es <strong>opcional</strong>: instala <strong>axcStudios Games</strong> como aplicación y se abrirá a pantalla completa, sin barra del navegador. Sin instalar, todo sigue funcionando aquí.</p>
     <button class="btn btn-primary" id="bannerBtn">⤓ Instalar ahora</button>
   </div>
 
@@ -180,7 +182,7 @@ footer a:hover{color:var(--accent)}
 </div>
 
 <footer>
-  axcStudios Games · app oficial del estudio — <a onclick="location.href='index.html'">volver al estudio</a> · <a onclick="AXC_UI.openInstall({app:'store',name:'axcStudios Games',icon:'images/store-icon-512.png'})">cómo instalar</a>
+  axcStudios Games · tienda oficial del estudio — <a onclick="location.href='index.html'">volver al estudio</a> · <a onclick="AXC_UI.openInstall({app:'store',name:'axcStudios Games',icon:'images/store-icon-512.png'})">instalar (opcional)</a>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -216,6 +218,7 @@ function net() {
 
 function refresh() {
   const u = AXC.state.user, sa = AXC.standalone();
+  /* banner de instalación opcional: solo si NO la tiene instalada ya */
   document.getElementById('bannerInstall').classList.toggle('show', !!u && !sa);
   render();
 }
@@ -224,10 +227,10 @@ let filter = 'all';
 function render() {
   axcRenderGames(document.getElementById('grid'), {
     filter, query: document.getElementById('search').value || '',
-    onPlay: (g) => {
+    onPlay: (g, card) => {
       if (!AXC.state.user) return AXC_UI.openAuth('login');
-      if (!AXC.standalone()) return AXC_UI.openInstall({ app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' });
-      location.href = 'player.html#' + g.id;
+      /* el juego corre DENTRO de esta página, con animación FLIP */
+      AXC_UI.launchGame(g, card);
     }
   });
   document.getElementById('countBadge').textContent = window.AXC_GAMES.length + ' juegos';

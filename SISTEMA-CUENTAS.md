@@ -9,9 +9,9 @@ funciona por dentro y cómo agregar el mismo sistema a cualquier otra página we
 ## 1. Qué es
 
 - El jugador crea su cuenta **una vez** (usuario + contraseña + correo).
-- Recibe un **código de verificación de 6 dígitos** que llega por canales reales:
-  - a su correo (formsubmit.co), **y**
-  - al **Buzón axc** integrado (se descarga del servidor en la propia pantalla, siempre funciona).
+- Recibe un **código de verificación de 6 dígitos** que llega al **Buzón axc** integrado:
+  se descarga del servidor en vivo y **se muestra solo en grande en la pantalla** (y se
+  escribe automáticamente). También se intenta entregar al correo real (mejor esfuerzo).
 - Al verificarlo, la cuenta queda **guardada en un servidor** (no en la página, no es
   una simulación: los datos viven en un servidor real en la nube).
 - Con esa misma cuenta puede **iniciar sesión en cualquier otra página que tenga el
@@ -60,17 +60,17 @@ El registro guarda: usuario `u`, correo `m`, salt `s`, hash `k` (PBKDF2-SHA256,
 1. La página llama `AXC.signup({user, mail, pass})`.
 2. La biblioteca comprueba en el servidor que el usuario esté libre.
 3. Genera el código de 6 dígitos y lo **envía por 4 canales**:
-   - **Buzón axc** (garantizado): guarda un sobre sellado en `axcm1:{usuario}` →
-     la pantalla de verificación lo **descarga del servidor** y puede aplicarlo
-     con un clic ("Mostrar el código y aplicarlo"). El código viaja sellado con
-     un secreto que solo tiene el navegador que hizo el registro.
-   - **Correo real** al buzón del usuario vía `formsubmit.co` (la primera vez que
-     se envía a una dirección, FormSubmit manda un correo de activación a esa
-     dirección: hay que abrirlo y pulsar "Activate" una sola vez; luego llegan
-     los códigos directamente. Si no llega, el Buzón axc siempre funciona).
+   - **Buzón axc** (canal principal, garantizado): guarda un sobre sellado en
+     `axcm1:{usuario}` → la pantalla de verificación lo **descarga del servidor cada
+     2 s** y **muestra el código automáticamente en grande, escribiéndolo en los
+     campos por ti**. El código viaja sellado con un secreto que solo tiene el
+     navegador que hizo el registro. Si el buzón no puede recibir el sobre, la
+     biblioteca **avisa del error** (antes lo ocultaba).
+   - **Correo real** al buzón del usuario vía `formsubmit.co` (mejor esfuerzo: puede
+     estar bloqueado por Cloudflare o pedir activación; el Buzón axc siempre funciona).
    - **ntfy.sh** (push en vivo, si hay cuota disponible).
    - **Tu servidor WebSocket** (si está despierto).
-4. El jugador escribe el código → `AXC.verify(code)`:
+4. El jugador escribe (o ya tiene escrito) el código → `AXC.verify(code)`:
    - comprueba el hash del código (máx. 6 intentos, caduca en 15 min),
    - comprueba que nadie más registró ese usuario mientras tanto,
    - guarda la cuenta en el servidor (clave principal + respaldo),
@@ -166,22 +166,23 @@ las páginas hablan con el mismo servidor de cuentas central**.
 
 De `AXC_UI` (interfaz): `init`, `openAuth('login'|'signup')`, `closeAuth`,
 `openInstall({app,name,icon})`, `nativeInstall()`, `toast(msg)`, `canPlay()`,
-`standalone()`, `mountChip(el)`, `uaDevice()`.
+`standalone()`, `mountChip(el)`, `uaDevice()`, **`launchGame(juego, tarjeta?)`**
+(abre el juego DENTRO de la página a pantalla completa, con animación FLIP desde la
+ Tarjeta y pantalla de carga con motion graphics) y `closeGame()`.
 
 ## 7. Las reglas de acceso de las páginas axcStudios
 
-| Contenido | Sin sesión | Con sesión, en navegador | Con sesión, en app instalada |
-|---|---|---|---|
-| Studio (pestaña principal) | ✔ visible | ✔ | ✔ |
-| Catálogo de la tienda | 🔒 candado | ✔ | ✔ |
-| Jugar (botón Jugar) | 🔒 | 🔒 pide instalar | ▶ **juega dentro de la app** |
-| axcOS | 🔒 | 🔒 pide instalar | ▶ **pantalla completa** |
+**Instalar la app es OPCIONAL**: todo corre en la página. El único candado real es la sesión.
 
-"App instalada" = la página corre en `display-mode: standalone` (instalada con el
-botón nativo del navegador: Chrome/Edge "Instalar página como aplicación",
-Android "Instalar aplicación", iOS Safari "Añadir a pantalla de inicio").
+| Contenido | Sin sesión | Con sesión (navegador o app instalada) |
+|---|---|---|
+| Studio (pestaña principal) | ✔ visible | ✔ |
+| Catálogo de la tienda | 🔒 candado | ✔ |
+| Jugar (botón Jugar) | 🔒 | ▶ **juega aquí mismo**, a pantalla completa, con animación de lanzamiento |
+| axcOS | 🔒 | ▶ **corre nativo aquí**, embebido en la página (con botón de pantalla completa) |
 
-Las 3 apps instalables del mismo repo (como los FNAF: mismo sitio, links propios):
+Si quieres las apps en tu escritorio (opcional), las 3 se instalan desde el mismo repo
+(como los FNAF: mismo sitio, links propios):
 
 | App | Link | Manifest |
 |---|---|---|
@@ -215,23 +216,24 @@ Las 3 apps instalables del mismo repo (como los FNAF: mismo sitio, links propios
 | Síntoma | Causa | Solución |
 |---|---|---|
 | "No se pudo conectar con el servidor de cuentas" | textdb.dev caído o sin internet | Reintentar; el login funciona con caché local si ya iniciaste sesión en ese dispositivo |
-| El correo no llega | FormSubmit primera vez / spam / servicio lento | Usar el **Buzón axc** (siempre llega) o "Reenviar" tras activar |
+| El correo no llega | FormSubmit bloqueado por Cloudflare / primera vez / spam | El **Buzón axc** muestra el código automáticamente en la pantalla (siempre llega); el correo es solo un extra |
+| "El servidor de correo axc no respondió" | textdb.dev no pudo guardar el sobre | Esperar unos segundos y pulsar **Reenviar código** |
 | "Red axc dormida" | El servidor de Render está hibernando | Esperar: reconecta solo (hasta 2-3 min) |
-| Todo el texto dice que instale la app | Estás en el navegador, no en la app | Instalar con el botón azul y **abrir la app instalada** |
 | El usuario ya existe | Alguien lo registró | Elegir otro nombre (3-16 letras/números/_) |
 
 ## 10. Archivos del sistema
 
 ```
 axc-auth.js               ← biblioteca del sistema (el corazón, portable)
-axc-ui.js                 ← interfaz (modal de cuenta con Buzón axc, gates, instalación)
+axc-ui.js                 ← interfaz (modal liquid glass con Buzón axc v2, reproductor
+                             de juegos en página, glow del cursor, instalación opcional)
 games-data.js             ← catálogo de juegos (compartido)
-index.html                ← estudio (3 pestañas con candados)
-store.html                ← app Tienda (manifest propio)
-axcos.html                ← app axcOS (manifest propio, embebe eosaxroom)
-player.html               ← reproductor de juegos (a pantalla completa en la app)
+index.html                ← estudio (3 pestañas: Studio / tienda / axcOS embebido)
+store.html                ← Tienda (manifest propio, juegos corren en la página)
+axcos.html                ← axcOS (manifest propio, embebe eosaxroom)
+player.html               ← reproductor directo de un juego (enlace #id del juego)
 manifest*.webmanifest     ← 3 manifests (una app = un manifest + un link)
-sw.js                     ← service worker (necesario para instalar como app)
+sw.js                     ← service worker (para instalar como app, opcional)
 cuenta-demo.html          ← ejemplo mínimo de integración (cópialo)
 ```
 

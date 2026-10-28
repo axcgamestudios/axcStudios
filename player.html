@@ -20,7 +20,7 @@ body{background:#06070d;color:var(--text-primary);font-family:var(--font-body);h
 img{display:block;max-width:100%}
 h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
 .topbar{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:12px;padding:9px 14px;
-  background:rgba(8,9,14,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+  background:linear-gradient(165deg,rgba(255,255,255,.08),rgba(8,9,14,.5) 60%);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
 .back{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:11px;border:1px solid var(--border);
   background:rgba(255,255,255,.05);color:var(--text-secondary);font-family:var(--font-display);font-weight:600;font-size:.82rem;cursor:pointer;transition:.25s}
 .back:hover{color:#fff;border-color:rgba(255,255,255,.25)}
@@ -119,12 +119,13 @@ if (!game) {
 
 function refresh() {
   if (!game) return;
-  const u = AXC.state.user, sa = AXC.standalone();
+  const u = AXC.state.user;
   const gate = document.getElementById('gate');
   const frame = document.getElementById('frame');
-  if (u && sa) {
+  if (u) {
+    /* con sesión basta: el juego corre aquí, sin instalar nada */
     gate.classList.remove('show');
-    if (!frame.src) {
+    if (!frame.getAttribute('src')) {
       frame.src = game.url;
       frame.addEventListener('load', () => document.getElementById('loading').classList.add('off'), { once: true });
       setTimeout(() => document.getElementById('loading').classList.add('off'), 9000);
@@ -133,23 +134,13 @@ function refresh() {
   }
   document.getElementById('loading').classList.add('off');
   gate.classList.add('show');
-  if (!u) {
-    document.getElementById('gateTitle').textContent = game.title + ' es para miembros';
-    document.getElementById('gateText').textContent = 'Inicia sesión con tu cuenta axc para jugar. La misma cuenta te sirve en toda la tienda, axcOS y cualquier página axc.';
-    document.getElementById('gateActs').innerHTML =
-      '<button class="btn btn-primary" id="gSignup">✨ Crear cuenta</button>' +
-      '<button class="btn btn-ghost" id="gLogin">Ya tengo cuenta</button>';
-    document.getElementById('gSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
-    document.getElementById('gLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
-  } else {
-    document.getElementById('gateTitle').textContent = 'Juega dentro de la app 📦';
-    document.getElementById('gateText').textContent = 'Los juegos corren dentro de axcStudios Games instalada como aplicación (a pantalla completa, sin barra del navegador). Instálala y vuelve a entrar: tu sesión ya está lista, ' + u.u + '.';
-    document.getElementById('gateActs').innerHTML =
-      '<button class="btn btn-primary" id="gInstall">⤓ Instalar la tienda</button>' +
-      '<button class="btn btn-ghost" id="gHow">¿Cómo?</button>';
-    document.getElementById('gInstall').addEventListener('click', () => AXC_UI.nativeInstall());
-    document.getElementById('gHow').addEventListener('click', () => AXC_UI.openInstall({ app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' }));
-  }
+  document.getElementById('gateTitle').textContent = game.title + ' es para miembros';
+  document.getElementById('gateText').textContent = 'Inicia sesión con tu cuenta axc para jugar. La misma cuenta te sirve en toda la tienda, axcOS y cualquier página axc.';
+  document.getElementById('gateActs').innerHTML =
+    '<button class="btn btn-primary" id="gSignup">✨ Crear cuenta</button>' +
+    '<button class="btn btn-ghost" id="gLogin">Ya tengo cuenta</button>';
+  document.getElementById('gSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
+  document.getElementById('gLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
 }
 </script>
 </body>

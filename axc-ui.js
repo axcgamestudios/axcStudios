@@ -1,49 +1,80 @@
-/* axc-ui.js — Interfaz de usuario del sistema de cuentas + instalación (compartida)
-   Requiere: axc-auth.js. Usado por index.html, store.html, axcos.html, player.html */
+/* axc-ui.js — Interfaz axc v2 · LIQUID GLASS
+   Requiere: axc-auth.js. Usado por index.html, store.html, axcos.html, player.html
+   - Diseño liquid glass (cristal líquido con reflejos especulares)
+   - Glow que sigue el cursor (clase .glow — se aplica solo)
+   - Buzón axc v2: el código llega y SE MUESTRA solo, en grande
+   - launchGame(): los juegos corren DENTRO de la página, a pantalla
+     completa, con animación FLIP desde la tarjeta + pantalla de carga
+     con motion graphics. Instalar apps es OPCIONAL. */
 window.AXC_UI = (function () {
   'use strict';
   if (window.AXC_UI) return window.AXC_UI;
   const $ = (s, r) => (r || document).querySelector(s);
   const AXC = window.AXC;
 
-  /* ================== ESTILOS ================== */
+  /* ================== ESTILOS (liquid glass) ================== */
   const CSS = `
-.axcui-root{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(4,5,10,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);opacity:0;transition:opacity .25s}
+/* ---- material de cristal líquido ---- */
+.axcui-root{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(3,4,9,.62);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);opacity:0;transition:opacity .3s}
 .axcui-root.open{display:flex;opacity:1}
-.axcui-card{position:relative;width:100%;max-width:430px;max-height:92vh;overflow:auto;background:linear-gradient(165deg,#101322 0%,#0b0d18 60%,#0c101f 100%);border:1px solid rgba(255,255,255,.09);border-radius:22px;box-shadow:0 30px 90px rgba(0,0,0,.65),0 0 0 1px rgba(46,124,246,.10),0 0 70px rgba(46,124,246,.12);padding:24px;transform:translateY(16px) scale(.97);transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.axcui-card{position:relative;width:100%;max-width:430px;max-height:92vh;overflow:auto;
+  background:linear-gradient(165deg,rgba(255,255,255,.13),rgba(255,255,255,.045) 40%,rgba(46,124,246,.07));
+  backdrop-filter:blur(30px) saturate(190%);-webkit-backdrop-filter:blur(30px) saturate(190%);
+  border:1px solid rgba(255,255,255,.16);border-radius:26px;
+  box-shadow:0 34px 100px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04),0 0 90px rgba(46,124,246,.14),inset 0 1px 0 rgba(255,255,255,.28),inset 0 -18px 40px rgba(46,124,246,.05);
+  padding:24px;transform:translateY(18px) scale(.96);transition:transform .45s cubic-bezier(.16,1,.3,1)}
+.axcui-card::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent)}
 .axcui-root.open .axcui-card{transform:none}
-.axcui-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#cfd6e4;font-size:15px;cursor:pointer;transition:.2s}
-.axcui-x:hover{background:rgba(255,255,255,.1)}
+.axcui-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#cfd6e4;font-size:15px;cursor:pointer;transition:.2s}
+.axcui-x:hover{background:rgba(255,255,255,.14);transform:rotate(90deg)}
 .axcui-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.axcui-logo img{width:38px;height:38px;border-radius:11px}
+.axcui-logo img{width:38px;height:38px;border-radius:11px;box-shadow:0 8px 26px rgba(0,0,0,.45)}
 .axcui-logo b{font-family:'Space Grotesk',sans-serif;font-size:19px;letter-spacing:.2px}
 .axcui-logo span{color:#38e8ff;font-size:11px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase;display:block;margin-top:-2px}
-.axcui-tabs{display:flex;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:4px;margin-bottom:18px}
-.axcui-tab{flex:1;padding:9px;border:0;border-radius:9px;background:transparent;color:rgba(245,246,247,.6);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.25s}
-.axcui-tab.on{background:#2e7cf6;color:#fff;box-shadow:0 4px 18px rgba(46,124,246,.4)}
+.axcui-tabs{display:flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:4px;margin-bottom:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.axcui-tab{flex:1;padding:9px;border:0;border-radius:10px;background:transparent;color:rgba(245,246,247,.6);font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.25s}
+.axcui-tab.on{background:linear-gradient(135deg,#2e7cf6,#1b5fd9);color:#fff;box-shadow:0 4px 18px rgba(46,124,246,.45)}
 .axcui-f{margin-bottom:12px}
 .axcui-f label{display:block;font-size:12px;font-weight:600;color:rgba(245,246,247,.55);margin-bottom:6px;letter-spacing:.3px}
-.axcui-f input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.11);background:rgba(255,255,255,.04);color:#f5f6f7;font-size:15px;outline:none;transition:.25s;font-family:inherit}
-.axcui-f input:focus{border-color:#2e7cf6;background:rgba(46,124,246,.07);box-shadow:0 0 0 3px rgba(46,124,246,.18)}
-.axcui-btn{width:100%;padding:13px;border:0;border-radius:13px;background:linear-gradient(135deg,#2e7cf6,#1b5fd9);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.25s;box-shadow:0 8px 26px rgba(46,124,246,.35);display:flex;align-items:center;justify-content:center;gap:8px}
-.axcui-btn:hover{transform:translateY(-1px);box-shadow:0 12px 32px rgba(46,124,246,.5);filter:brightness(1.08)}
+.axcui-f input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.06);color:#f5f6f7;font-size:15px;outline:none;transition:.25s;font-family:inherit}
+.axcui-f input:focus{border-color:#2e7cf6;background:rgba(46,124,246,.09);box-shadow:0 0 0 3px rgba(46,124,246,.18)}
+.axcui-btn{width:100%;padding:13px;border:0;border-radius:14px;background:linear-gradient(135deg,#2e7cf6,#1b5fd9);color:#fff;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:.25s;box-shadow:0 8px 26px rgba(46,124,246,.35);display:flex;align-items:center;justify-content:center;gap:8px;position:relative;overflow:hidden}
+.axcui-btn::after{content:'';position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);transition:left .55s ease}
+.axcui-btn:hover{transform:translateY(-1px);box-shadow:0 12px 34px rgba(46,124,246,.5);filter:brightness(1.08)}
+.axcui-btn:hover::after{left:130%}
 .axcui-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.axcui-btn.ghost{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);box-shadow:none;color:#dfe5f0}
+.axcui-btn.ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.14);color:#dfe5f0}
 .axcui-btn.ok{background:linear-gradient(135deg,#18c964,#0e9e4c);box-shadow:0 8px 26px rgba(24,201,100,.35)}
 .axcui-err{display:none;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.35);color:#ff9db3;padding:10px 12px;border-radius:11px;font-size:13px;margin-bottom:12px;line-height:1.45}
 .axcui-ok{background:rgba(24,201,100,.08);border:1px solid rgba(24,201,100,.3);color:#7ff0b0;padding:10px 12px;border-radius:11px;font-size:13px;margin-bottom:12px;line-height:1.5}
 .axcui-note{font-size:12.5px;color:rgba(245,246,247,.5);line-height:1.55;margin-top:10px}
-.axcui-link{color:#38e8ff;cursor:pointer;text-decoration:underline;text-underline-offset:3px;background:none;border:0;padding:0;font:inherit}
 .axcui-otp{display:flex;gap:8px;justify-content:center;margin:6px 0 14px}
-.axcui-otp input{width:46px;height:54px;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:#fff;outline:none;transition:.2s}
+.axcui-otp input{width:46px;height:54px;text-align:center;font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;outline:none;transition:.2s}
 .axcui-otp input:focus{border-color:#38e8ff;box-shadow:0 0 0 3px rgba(56,232,255,.2);transform:translateY(-2px)}
-.axcui-mail{border:1px solid rgba(56,232,255,.25);background:linear-gradient(160deg,rgba(56,232,255,.06),rgba(46,124,246,.04));border-radius:16px;padding:14px;margin:14px 0}
-.axcui-mail-h{display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:.4px;color:#9fe8ff;margin-bottom:10px}
+.axcui-otp input.filled{border-color:rgba(56,232,255,.55);background:rgba(56,232,255,.09)}
+/* ---- BUZÓN AXC v2: el código se ve, llega solo ---- */
+.axcui-mail{position:relative;border:1px solid rgba(56,232,255,.3);border-radius:18px;padding:15px;margin:14px 0;overflow:hidden;
+  background:linear-gradient(160deg,rgba(56,232,255,.09),rgba(46,124,246,.05));box-shadow:inset 0 1px 0 rgba(255,255,255,.18)}
+.axcui-mail.waiting{animation:mailBreath 2.2s ease-in-out infinite}
+@keyframes mailBreath{50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 26px rgba(56,232,255,.22)}}
+.axcui-mail-h{display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:1.2px;color:#9fe8ff;margin-bottom:9px}
 .axcui-mail-h .dot{width:8px;height:8px;border-radius:50%;background:#38e8ff;animation:axcui-blink 1.1s infinite}
 @keyframes axcui-blink{50%{opacity:.15}}
 .axcui-mail-b{font-size:13px;color:rgba(245,246,247,.75);line-height:1.6}
 .axcui-mail-b b{color:#fff}
-.axcui-dots{display:flex;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap}
+.axcenv{font-size:1.7rem;line-height:1;display:inline-block;margin-right:8px;animation:envFly 2.4s ease-in-out infinite}
+@keyframes envFly{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-6px) rotate(4deg)}}
+.axcui-mail.arrived{border-color:rgba(24,201,100,.45);background:linear-gradient(160deg,rgba(24,201,100,.12),rgba(46,124,246,.05))}
+.axcui-mail.arrived .axcenv{animation:envPop .7s cubic-bezier(.16,1,.3,1)}
+@keyframes envPop{0%{transform:scale(.4) rotate(-30deg);opacity:0}60%{transform:scale(1.3) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+.axccode{display:flex;gap:7px;justify-content:center;margin:12px 0 4px}
+.axccode i{font-style:normal;width:42px;height:50px;display:grid;place-items:center;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:#041220;
+  background:linear-gradient(160deg,#7deeff,#2e7cf6);box-shadow:0 8px 22px rgba(46,124,246,.4);animation:digitPop .55s cubic-bezier(.16,1,.3,1) backwards}
+.axccode i:nth-child(1){animation-delay:.05s}.axccode i:nth-child(2){animation-delay:.13s}.axccode i:nth-child(3){animation-delay:.21s}
+.axccode i:nth-child(4){animation-delay:.29s}.axccode i:nth-child(5){animation-delay:.37s}.axccode i:nth-child(6){animation-delay:.45s}
+@keyframes digitPop{from{transform:translateY(18px) scale(.5) rotate(-8deg);opacity:0}}
+.axcui-dots{display:flex;gap:14px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);flex-wrap:wrap}
 .axcui-dot{display:flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(245,246,247,.5)}
 .axcui-dot i{width:8px;height:8px;border-radius:50%;background:#5a6274;display:inline-block}
 .axcui-dot.on i{background:#18c964;box-shadow:0 0 8px rgba(24,201,100,.8)}
@@ -53,18 +84,67 @@ window.AXC_UI = (function () {
 .axcui-step-n{flex:0 0 26px;height:26px;border-radius:9px;background:rgba(46,124,246,.15);border:1px solid rgba(46,124,246,.4);color:#7fb5ff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif}
 .axcui-step p{font-size:13.5px;color:rgba(245,246,247,.78);line-height:1.55;margin:1px 0 0}
 .axcui-step strong{color:#fff}
-.axcui-toast{position:fixed;top:18px;left:50%;transform:translate(-50%,-90px);z-index:1200;background:#101527;border:1px solid rgba(56,232,255,.3);color:#e8f4ff;padding:12px 20px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 16px 50px rgba(0,0,0,.55);transition:transform .45s cubic-bezier(.16,1,.3,1);max-width:88vw;text-align:center}
+/* ---- toast ---- */
+.axcui-toast{position:fixed;top:18px;left:50%;transform:translate(-50%,-100px);z-index:1400;
+  background:linear-gradient(165deg,rgba(255,255,255,.14),rgba(255,255,255,.05));backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%);
+  border:1px solid rgba(56,232,255,.32);color:#e8f4ff;padding:12px 20px;border-radius:15px;font-size:14px;font-weight:600;
+  box-shadow:0 18px 55px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.3);transition:transform .5s cubic-bezier(.16,1,.3,1);max-width:88vw;text-align:center}
 .axcui-toast.show{transform:translate(-50%,0)}
-.axcui-chip{display:flex;align-items:center;gap:9px;padding:8px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#f5f6f7;font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.25s;white-space:nowrap}
-.axcui-chip:hover{background:rgba(46,124,246,.16);border-color:rgba(46,124,246,.5)}
+/* ---- chip de cuenta ---- */
+.axcui-chip{display:flex;align-items:center;gap:9px;padding:8px 14px;border-radius:13px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#f5f6f7;font-family:'Space Grotesk',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:.25s;white-space:nowrap;backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}
+.axcui-chip:hover{background:rgba(46,124,246,.18);border-color:rgba(46,124,246,.5)}
 .axcui-ava{width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,#2e7cf6,#38e8ff);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#04101f;text-transform:uppercase}
-.axcui-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:190px;background:#0e1220;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:8px;box-shadow:0 18px 50px rgba(0,0,0,.6);display:none;z-index:60}
+.axcui-menu{position:absolute;top:calc(100% + 8px);right:0;min-width:190px;background:rgba(14,18,32,.9);backdrop-filter:blur(28px) saturate(180%);border:1px solid rgba(255,255,255,.14);border-radius:15px;padding:8px;box-shadow:0 20px 55px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.2);display:none;z-index:60}
 .axcui-menu.open{display:block}
 .axcui-menu button{width:100%;text-align:left;padding:10px 12px;border:0;background:transparent;color:#dfe5f0;font-size:13.5px;border-radius:10px;cursor:pointer;font-family:inherit}
 .axcui-menu button:hover{background:rgba(255,77,109,.14);color:#ffb3c2}
 .axcui-menu .info{padding:8px 12px 6px;font-size:11.5px;color:rgba(245,246,247,.45);border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px;line-height:1.5}
-.axcui-hint{font-size:12px;color:#f5b942;background:rgba(245,185,66,.08);border:1px solid rgba(245,185,66,.25);border-radius:11px;padding:9px 12px;margin-bottom:12px;line-height:1.5}
-@media (max-width:520px){.axcui-otp input{width:40px;height:48px;font-size:21px}.axcui-card{padding:20px}}
+/* ================== REPRODUCTOR EN PÁGINA (juego aquí mismo) ================== */
+.axcplay{position:fixed;inset:0;z-index:1300;display:none;flex-direction:column;background:radial-gradient(90% 80% at 50% 20%,#0b1030 0%,#04050c 62%);opacity:0;transition:opacity .35s}
+.axcplay.open{display:flex;opacity:1}
+.axcplay-bar{position:relative;z-index:30;display:flex;align-items:center;gap:10px;padding:9px 14px;flex-wrap:wrap;
+  background:rgba(8,10,18,.66);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-bottom:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 34px rgba(0,0,0,.45)}
+.axcplay-back{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#dfe5f0;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.82rem;cursor:pointer;transition:.25s}
+.axcplay-back:hover{background:rgba(255,255,255,.13);color:#fff;transform:translateX(-2px)}
+.axcplay-gt{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.axcplay-gt img{width:30px;height:30px;border-radius:8px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.axcplay-gt b{font-family:'Space Grotesk',sans-serif;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.axcplay-gt span{font-size:.64rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#38e8ff;white-space:nowrap}
+.axcplay-act{display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.05);color:#cfe0f5;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.8rem;cursor:pointer;transition:.25s;text-decoration:none}
+.axcplay-act:hover{background:rgba(46,124,246,.2);border-color:rgba(46,124,246,.5);color:#fff;transform:translateY(-1px)}
+.axcplay-stage{position:relative;flex:1;background:#04050c}
+.axcplay-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:#04050c;opacity:0;transition:opacity .6s .1s}
+.axcplay.ready .axcplay-stage iframe{opacity:1}
+/* pantalla de carga con motion graphics */
+.axcplay-load{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;
+  background:radial-gradient(80% 70% at 50% 30%,rgba(46,124,246,.16),rgba(4,5,12,.9) 75%);transition:opacity .55s,transform .55s}
+.axcplay.ready .axcplay-load{opacity:0;transform:scale(1.06);pointer-events:none}
+.axcplay-hero{position:relative;width:min(300px,52vw);aspect-ratio:3/4;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 34px 90px rgba(0,0,0,.7),0 0 80px rgba(46,124,246,.35);animation:heroIn .9s cubic-bezier(.16,1,.3,1) backwards}
+@keyframes heroIn{from{opacity:0;transform:translateY(30px) scale(.82) rotate(-2deg)}}
+.axcplay-hero img{width:100%;height:100%;object-fit:cover}
+.axcplay-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(4,5,12,.75))}
+.axcplay-rings{position:absolute;width:430px;height:430px;pointer-events:none}
+.axcplay-rings i{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(56,232,255,.35);animation:ringSpin 9s linear infinite}
+.axcplay-rings i:nth-child(2){inset:34px;border-color:rgba(46,124,246,.4);border-style:dashed;animation-duration:13s;animation-direction:reverse}
+.axcplay-rings i:nth-child(3){inset:72px;border-color:rgba(139,92,246,.32);animation-duration:17s}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+.axcplay-title{margin-top:20px;font-family:'Space Grotesk',sans-serif;font-size:clamp(1.5rem,3.6vw,2.3rem);font-weight:700;letter-spacing:-.02em;text-align:center;
+  background:linear-gradient(100deg,#fff 20%,#9fe8ff 60%,#2e7cf6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:titleUp .8s .25s cubic-bezier(.16,1,.3,1) backwards}
+@keyframes titleUp{from{opacity:0;transform:translateY(16px);filter:blur(6px)}}
+.axcplay-sub{font-size:.8rem;font-weight:600;letter-spacing:2.4px;text-transform:uppercase;color:rgba(245,246,247,.55);animation:titleUp .8s .35s cubic-bezier(.16,1,.3,1) backwards}
+.axcplay-prog{width:min(340px,72vw);height:5px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-top:22px;box-shadow:inset 0 1px 3px rgba(0,0,0,.5)}
+.axcplay-prog i{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#2e7cf6,#38e8ff, #8b5cf6);background-size:200% 100%;animation:progShine 1.2s linear infinite;transition:width .3s ease;box-shadow:0 0 16px rgba(56,232,255,.7)}
+@keyframes progShine{to{background-position:-200% 0}}
+.axcplay-msg{margin-top:12px;font-family:'Space Grotesk',sans-serif;font-size:.85rem;color:#9fe8ff;letter-spacing:.4px;min-height:1.4em;animation:titleUp .8s .45s backwards}
+.axcplay-msg b{animation:axcui-blink 1.2s infinite}
+.axcplay-parts{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.axcplay-parts i{position:absolute;bottom:-12px;width:5px;height:5px;border-radius:50%;background:rgba(56,232,255,.65);box-shadow:0 0 10px rgba(56,232,255,.8);animation:partUp linear infinite}
+@keyframes partUp{from{transform:translateY(0) scale(1);opacity:0}12%{opacity:.9}to{transform:translateY(-104vh) scale(.2);opacity:0}}
+.axcplay-flip{position:fixed;z-index:1350;border-radius:20px;object-fit:cover;pointer-events:none;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 70px rgba(46,124,246,.5);transition:all .72s cubic-bezier(.16,1,.3,1)}
+@media (max-width:520px){.axcui-otp input{width:40px;height:48px;font-size:21px}.axccode i{width:38px;height:46px;font-size:22px}.axcui-card{padding:20px}.axcplay-rings{width:320px;height:320px}}
 `;
   const style = document.createElement('style');
   style.textContent = CSS;
@@ -84,10 +164,14 @@ window.AXC_UI = (function () {
   toastEl.className = 'axcui-toast'; document.body.appendChild(toastEl);
 
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') { if (authRoot.classList.contains('open')) closeAuth(); if (instRoot.classList.contains('open')) closeInstall(); }
+    if (e.key === 'Escape') {
+      if (playRoot.classList.contains('open')) return closeGame();
+      if (authRoot.classList.contains('open')) closeAuth();
+      if (instRoot.classList.contains('open')) closeInstall();
+    }
   });
   function openModal(m) { m.classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeModal(m) { m.classList.remove('open'); if (!authRoot.classList.contains('open') && !instRoot.classList.contains('open')) document.body.style.overflow = ''; }
+  function closeModal(m) { m.classList.remove('open'); if (!authRoot.classList.contains('open') && !instRoot.classList.contains('open') && !playRoot.classList.contains('open')) document.body.style.overflow = ''; }
 
   /* ================== TOAST ================== */
   let toastT;
@@ -98,7 +182,38 @@ window.AXC_UI = (function () {
     toastT = setTimeout(() => toastEl.classList.remove('show'), 3600);
   }
 
-  /* ================== INSTALACIÓN PWA ================== */
+  /* ================== GLOW QUE SIGUE EL CURSOR ==================
+     Cualquier elemento con clase .glow lleva un degradado de luz
+     que persigue al puntero (borde + interior). Delegado: funciona
+     también con contenido renderizado después. */
+  document.addEventListener('pointermove', e => {
+    let el = null;
+    try { el = e.target && e.target.closest ? e.target.closest('.glow') : null; } catch (err) { }
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }, { passive: true });
+  const GLOW_CSS = document.createElement('style');
+  GLOW_CSS.textContent = `
+.glow{position:relative}
+.glow::before{content:'';position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .4s;pointer-events:none;z-index:0;
+  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(56,232,255,.16),rgba(46,124,246,.09) 42%,transparent 66%)}
+.glow:hover::before{opacity:1}
+.glow::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1.4px;opacity:0;transition:opacity .45s;pointer-events:none;z-index:1;
+  background:radial-gradient(190px circle at var(--mx,50%) var(--my,50%),rgba(56,232,255,.75),rgba(46,124,246,.35) 55%,transparent 75%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.glow:hover::after{opacity:1}
+.glow>*{position:relative;z-index:2}`;
+  document.head.appendChild(GLOW_CSS);
+  /* aplica glow a tarjetas y botones comunes de las páginas axc */
+  function autoGlow() {
+    document.querySelectorAll('.game-card,.card,.app-card,.stat,.obj,.hchip,.filter-chip,.chip,.hbadge,.gate,.btn,.btn-play,.axcplay-act,.axcplay-back,.tab-btn').forEach(el => el.classList.add('glow'));
+  }
+  setInterval(autoGlow, 1500);
+  addEventListener('load', autoGlow);
+
+  /* ================== INSTALACIÓN PWA (OPCIONAL) ================== */
   let deferredPrompt = null;
   let instCfg = { app: 'main', name: 'axcStudios', icon: 'images/icon-192.png' };
   addEventListener('beforeinstallprompt', e => {
@@ -132,19 +247,19 @@ window.AXC_UI = (function () {
   }
   const INSTALL_STEPS = {
     desktop: [
-      { t: 'En <strong>Chrome</strong> o <strong>Edge</strong>, mira la barra de direcciones: aparece el icono de instalar <strong>⤓</strong>. Púlsalo y elige <strong>«Instalar página como aplicación»</strong>.' },
+      { t: 'Es <strong>opcional</strong>: en <strong>Chrome</strong> o <strong>Edge</strong> pulsa el icono ⤓ de la barra de direcciones y elige <strong>«Instalar página como aplicación»</strong>.' },
       { t: 'Si no lo ves: menú <strong>⋮</strong> → <strong>«Aplicaciones» / «Instalar página como aplicación»</strong>.' },
-      { t: 'La app quedará en tu escritorio y menú de inicio, como cualquier programa. Se abre a pantalla completa, sin barra del navegador.' }
+      { t: 'La app quedará en tu escritorio y menú de inicio. Todo funciona igual sin instalar: los juegos y axcOS corren en la página.' }
     ],
     android: [
-      { t: 'En <strong>Chrome</strong>, toca el menú <strong>⋮</strong> de arriba a la derecha.' },
+      { t: 'Es <strong>opcional</strong>: en <strong>Chrome</strong>, toca el menú <strong>⋮</strong> de arriba a la derecha.' },
       { t: 'Pulsa <strong>«Instalar aplicación»</strong> (o «Añadir a pantalla de inicio»).' },
-      { t: 'Confirma: el icono quedará junto a tus demás apps y se abre a pantalla completa.' }
+      { t: 'El icono quedará junto a tus demás apps. Sin instalar, todo sigue funcionando en la página.' }
     ],
     ios: [
-      { t: 'Abre esta página en <strong>Safari</strong> (las apps solo se instalan desde Safari en iPhone/iPad).' },
+      { t: 'Es <strong>opcional</strong>: abre la página en <strong>Safari</strong>.' },
       { t: 'Toca el botón <strong>Compartir</strong> (cuadrado con flecha hacia arriba).' },
-      { t: 'Elige <strong>«Añadir a pantalla de inicio»</strong> y confirma. axcStudios quedará como una app real.' }
+      { t: 'Elige <strong>«Añadir a pantalla de inicio»</strong>. Todo funciona igual en la página sin instalar.' }
     ]
   };
 
@@ -154,23 +269,21 @@ window.AXC_UI = (function () {
     instRoot.innerHTML = `
       <div class="axcui-card">
         <button class="axcui-x" data-close>✕</button>
-        <div class="axcui-logo"><img src="${instCfg.icon}" alt=""><div><b>Instalar ${instCfg.name}</b><span>app nativa del navegador</span></div></div>
+        <div class="axcui-logo"><img src="${instCfg.icon}" alt=""><div><b>Instalar ${instCfg.name}</b><span>opcional · app nativa del navegador</span></div></div>
         <div class="axcui-ok" id="axcInstNative" style="display:none"></div>
         <div class="axcui-steps">${INSTALL_STEPS[dev].map((s, i) => `<div class="axcui-step"><div class="axcui-step-n">${i + 1}</div><p>${s.t}</p></div>`).join('')}</div>
         <button class="axcui-btn" id="axcInstBtn">⚡ Instalar ${instCfg.name} ahora</button>
-        <p class="axcui-note">El botón azul usa la instalación nativa del navegador (la misma de la tienda, sin tiendas). Si no está disponible todavía, usa los pasos de arriba: el navegador la activa unos segundos después de cargar la página.</p>
+        <p class="axcui-note">Instalar es <strong>opcional</strong>: lo añade a tu escritorio como programa, pero los juegos y axcOS corren perfectamente aquí mismo, en la página.</p>
       </div>`;
     const nb = $('#axcInstBtn', instRoot);
     const upd = () => {
       const n = $('#axcInstNative', instRoot);
       if (deferredPrompt) {
         n.style.display = 'block';
-        n.innerHTML = '✅ Tu navegador ya validó la app: el botón de abajo abrirá el <b>diálogo nativo de instalación</b>.';
-        nb.textContent = '⚡ Instalar ' + instCfg.name + ' ahora';
+        n.innerHTML = '✅ Tu navegador ya validó la app: el botón azul abrirá el <b>diálogo nativo de instalación</b>.';
       } else {
         n.style.display = 'block';
-        n.innerHTML = '⏳ Tu navegador todavía está validando la app (puede tardar unos segundos). Mientras, puedes usar los pasos manuales.';
-        nb.textContent = '🔄 Reintentar instalación nativa';
+        n.innerHTML = '⏳ El navegador todavía está validando la app (unos segundos). Puedes usar los pasos de arriba.';
       }
     };
     upd();
@@ -179,6 +292,122 @@ window.AXC_UI = (function () {
     openModal(instRoot);
   }
   function closeInstall() { closeModal(instRoot); }
+
+  /* ================== REPRODUCTOR DE JUEGOS EN LA PÁGINA ==================
+     Los juegos corren DENTRO de la misma página (a pantalla completa),
+     con animación FLIP desde la tarjeta y pantalla de carga con
+     motion graphics. Instalar apps ya no es necesario. */
+  const playRoot = document.createElement('div');
+  playRoot.className = 'axcplay';
+  playRoot.id = 'axc-play';
+  document.body.appendChild(playRoot);
+  let playMsgT = null, playProgT = null, playTO = null, currentGame = null;
+
+  const LOAD_MSGS = [
+    'Despertando el motor del juego',
+    'Calibrando controles',
+    'Cargando sprites y sonido',
+    'Sincronizando con la red axc',
+    'Últimos ajustes'
+  ];
+
+  function launchGame(game, fromEl) {
+    if (!game || !game.url) return;
+    currentGame = game;
+    clearInterval(playMsgT); clearInterval(playProgT); clearTimeout(playTO);
+    playRoot.classList.remove('ready');
+    playRoot.innerHTML = `
+      <div class="axcplay-bar">
+        <button class="axcplay-back" id="axcPlayBack">← Volver</button>
+        <div class="axcplay-gt"><img src="${game.img}" alt=""><b>${esc(game.title)}</b><span>${esc(game.genre || '')}</span></div>
+        <a class="axcplay-act" id="axcPlayFull" title="Pantalla completa">⛶</a>
+        <a class="axcplay-act" id="axcPlayExt" href="${game.url}" target="_blank" rel="noopener" title="Abrir en una pestaña aparte">↗ Pestaña</a>
+      </div>
+      <div class="axcplay-stage" id="axcPlayStage">
+        <div class="axcplay-load">
+          <div class="axcplay-parts">${Array.from({ length: 14 }, (_, i) =>
+            `<i style="left:${(i * 7.3 + 3) % 100}%;animation-duration:${5 + (i % 5) * 1.4}s;animation-delay:${(i * .45) % 4}s"></i>`).join('')}</div>
+          <div class="axcplay-rings"><i></i><i></i><i></i></div>
+          <div class="axcplay-hero" id="axcPlayHero"><img src="${game.img}" alt="${esc(game.title)}"></div>
+          <div class="axcplay-title">${esc(game.title)}</div>
+          <div class="axcplay-sub">${esc(game.genre || '')} · cargando</div>
+          <div class="axcplay-prog"><i id="axcPlayFill"></i></div>
+          <div class="axcplay-msg" id="axcPlayMsg">${LOAD_MSGS[0]}<b>…</b></div>
+        </div>
+        <iframe id="axcPlayFrame" src="" title="${esc(game.title)}" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; microphone"></iframe>
+      </div>`;
+    $('#axcPlayBack', playRoot).addEventListener('click', closeGame);
+    $('#axcPlayFull', playRoot).addEventListener('click', () => {
+      const st = $('#axcPlayStage', playRoot);
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+      else (st.requestFullscreen || st.webkitRequestFullscreen || function () { }).call(st);
+    });
+    openModal(playRoot);
+
+    /* --- FLIP: la portada vuela desde la tarjeta hasta el centro --- */
+    const heroImg = $('#axcPlayHero', playRoot) && $('#axcPlayHero', playRoot).querySelector('img');
+    if (heroImg) heroImg.style.opacity = '0';
+    let flip = null;
+    const srcImg = fromEl ? (fromEl.querySelector('.game-cover img') || fromEl.querySelector('img')) : null;
+    if (srcImg && heroImg) {
+      const r = srcImg.getBoundingClientRect();
+      flip = srcImg.cloneNode();
+      flip.className = 'axcplay-flip';
+      flip.style.left = r.left + 'px'; flip.style.top = r.top + 'px';
+      flip.style.width = r.width + 'px'; flip.style.height = r.height + 'px';
+      document.body.appendChild(flip);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const t = $('#axcPlayHero', playRoot).getBoundingClientRect();
+        flip.style.left = t.left + 'px'; flip.style.top = t.top + 'px';
+        flip.style.width = t.width + 'px'; flip.style.height = t.height + 'px';
+      }));
+      setTimeout(() => { if (flip) flip.remove(); flip = null; if (heroImg) { heroImg.style.transition = 'opacity .3s'; heroImg.style.opacity = '1'; } }, 780);
+    } else if (heroImg) {
+      heroImg.style.opacity = '1';
+    }
+
+    /* --- mensajes rotativos + progreso --- */
+    let mi = 0;
+    playMsgT = setInterval(() => {
+      mi = (mi + 1) % LOAD_MSGS.length;
+      const m = $('#axcPlayMsg', playRoot);
+      if (m) { m.style.animation = 'none'; void m.offsetWidth; m.style.animation = ''; m.innerHTML = LOAD_MSGS[mi] + '<b>…</b>'; }
+    }, 1400);
+    const t0 = Date.now();
+    playProgT = setInterval(() => {
+      const el = $('#axcPlayFill', playRoot);
+      if (!el) return clearInterval(playProgT);
+      const e = Date.now() - t0;
+      const p = Math.min(92, (e / 2100) * 92 + 4);
+      el.style.width = p + '%';
+    }, 120);
+
+    function finish() {
+      clearInterval(playProgT); clearInterval(playMsgT);
+      const f = $('#axcPlayFill', playRoot);
+      if (f) f.style.width = '100%';
+      const m = $('#axcPlayMsg', playRoot);
+      if (m) m.innerHTML = '✓ ¡Listo! ¡A jugar!';
+      setTimeout(() => playRoot.classList.add('ready'), 420);
+      dispatchEvent(new CustomEvent('axc:pulse'));
+    }
+    const frame = $('#axcPlayFrame', playRoot);
+    let minTime = new Promise(r => setTimeout(r, 1700));
+    frame.addEventListener('load', () => { Promise.all([minTime]).then(finish); }, { once: true });
+    frame.src = game.url;
+    playTO = setTimeout(finish, 11000); /* por si el load no dispara */
+  }
+
+  function closeGame() {
+    clearInterval(playMsgT); clearInterval(playProgT); clearTimeout(playTO);
+    playRoot.classList.remove('open');
+    setTimeout(() => { playRoot.innerHTML = ''; playRoot.classList.remove('ready'); }, 380);
+    closeModal(playRoot);
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
   /* ================== MODAL DE CUENTAS ================== */
   let mailPoll = null, resendT = null, resendLeft = 0, closable = true;
 
@@ -195,11 +424,8 @@ window.AXC_UI = (function () {
     const ws = st.ws === 'online' ? '<span class="axcui-dot on"><i></i>Red axc en vivo</span>'
       : st.ws === 'connecting' ? '<span class="axcui-dot wait"><i></i>Red axc conectando…</span>'
         : '<span class="axcui-dot"><i></i>Red axc dormida</span>';
-    const ma = '<span class="axcui-dot on"><i></i>Correo directo</span>';
-    return `<div class="axcui-dots">${db}${ws}${ma}</div>`;
+    return `<div class="axcui-dots">${db}${ws}</div>`;
   }
-
-  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 
   function viewAuth(mode) {
     mode = mode || 'login';
@@ -221,12 +447,13 @@ window.AXC_UI = (function () {
       if (t === 'login') viewLogin(); else viewSignup1();
     }
     function viewLogin() {
+      clearInterval(mailPoll);
       $('#axcView', authRoot).innerHTML = `
         <div class="axcui-err" id="axcErr"></div>
         <div class="axcui-f"><label>Usuario</label><input id="axcLu" autocomplete="username" spellcheck="false"></div>
         <div class="axcui-f"><label>Contraseña</label><input id="axcLp" type="password" autocomplete="current-password"></div>
         <button class="axcui-btn" id="axcLb">Entrar →</button>
-        <p class="axcui-note">La misma cuenta funciona en <strong>todas las páginas de axcStudios</strong> (tienda, juegos y cualquier web con el sistema axc).</p>`;
+        <p class="axcui-note">La misma cuenta funciona en <strong>todas las páginas de axcStudios</strong> (tienda, juegos, axcOS y cualquier web con el sistema axc).</p>`;
       const go = async () => {
         const btn = $('#axcLb', authRoot); btn.disabled = true; btn.textContent = 'Verificando…';
         const r = await AXC.login({ user: $('#axcLu', authRoot).value, pass: $('#axcLp', authRoot).value });
@@ -243,10 +470,10 @@ window.AXC_UI = (function () {
       $('#axcView', authRoot).innerHTML = `
         <div class="axcui-err" id="axcErr"></div>
         <div class="axcui-f"><label>Usuario <span style="opacity:.5">(3-16, letras/números/_)</span></label><input id="axcSu" autocomplete="username" spellcheck="false" placeholder="tu_nombre"></div>
-        <div class="axcui-f"><label>Correo <span style="opacity:.5">(recibirás el código)</span></label><input id="axcSm" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
+        <div class="axcui-f"><label>Correo <span style="opacity:.5">(adorno de tu perfil)</span></label><input id="axcSm" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
         <div class="axcui-f"><label>Contraseña <span style="opacity:.5">(mínimo 6)</span></label><input id="axcSp" type="password" autocomplete="new-password"></div>
         <button class="axcui-btn" id="axcSb">📨 Enviar código de verificación</button>
-        <p class="axcui-note">Te llegará un código de 6 dígitos: a tu correo <strong>y</strong> al <strong>Buzón axc</strong> integrado (llega siempre, se descarga del servidor en el siguiente paso). Tu contraseña se guarda cifrada (PBKDF2, nunca en claro).</p>`;
+        <p class="axcui-note">Tu código de 6 dígitos llega <strong>al instante al Buzón axc</strong> (lo ves aquí mismo, en grande, automáticamente). Tu contraseña se guarda cifrada (PBKDF2, nunca en claro).</p>`;
       const go = async () => {
         const btn = $('#axcSb', authRoot); btn.disabled = true; btn.textContent = 'Enviando código…';
         const r = await AXC.signup({
@@ -264,10 +491,10 @@ window.AXC_UI = (function () {
     function viewSignup2(info) {
       resendLeft = 0;
       $('#axcView', authRoot).innerHTML = `
-        <div class="axcui-ok">📨 Código enviado a <b>${esc(info.mail)}</b>. Comprueba tu correo (mira <b>spam</b>) o usa el <b>Buzón axc</b> de abajo, que lo descarga del servidor automáticamente.</div>
-        <div class="axcui-mail">
-          <div class="axcui-mail-h"><span class="dot"></span>✉ BUZÓN AXC · descarga automática</div>
-          <div class="axcui-mail-b" id="axcMailB">Descargando correo del servidor…</div>
+        <div class="axcui-ok">📨 Código enviado. Vigente <strong>15 minutos</strong>. El Buzón axc de abajo lo <strong>recibe automáticamente en unos segundos</strong> y lo escribe por ti.</div>
+        <div class="axcui-mail waiting" id="axcMailBox">
+          <div class="axcui-mail-h"><span class="dot"></span>✉ BUZÓN AXC · EN VIVO</div>
+          <div class="axcui-mail-b" id="axcMailB"><span class="axcenv">✉️</span>Esperando el correo del servidor…</div>
         </div>
         <div class="axcui-f"><label>Escribe el código de 6 dígitos</label>
           <div class="axcui-otp" id="axcOtp">${[0, 1, 2, 3, 4, 5].map(i => `<input maxlength="1" inputmode="numeric" data-i="${i}">`).join('')}</div>
@@ -282,41 +509,47 @@ window.AXC_UI = (function () {
       const otp = $('#axcOtp', authRoot);
       const inputs = [...otp.querySelectorAll('input')];
       inputs.forEach((inp, i) => {
-        inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, '').slice(-1); if (inp.value && i < 5) inputs[i + 1].focus(); });
+        inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, '').slice(-1); inp.classList.toggle('filled', !!inp.value); if (inp.value && i < 5) inputs[i + 1].focus(); });
         inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i - 1].focus(); });
         inp.addEventListener('paste', e => {
           e.preventDefault();
           const d = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
-          d.split('').forEach((c, j) => { if (inputs[j]) inputs[j].value = c; });
+          d.split('').forEach((c, j) => { if (inputs[j]) { inputs[j].value = c; inputs[j].classList.add('filled'); } });
           if (inputs[d.length]) inputs[Math.min(d.length, 5)].focus();
         });
       });
       inputs[0].focus();
       const code = () => inputs.map(i => i.value).join('');
+      const setCode = (c) => {
+        String(c).split('').forEach((ch, j) => { if (inputs[j]) { inputs[j].value = ch; inputs[j].classList.add('filled'); } });
+      };
 
-      /* buzón: descarga del servidor */
+      /* BUZÓN AXC v2: el código llega del servidor y SE MUESTRA SOLO */
       async function pollMail() {
+        if (!authRoot.classList.contains('open')) return;
         const m = await AXC.fetchMail();
+        const box = $('#axcMailBox', authRoot);
         const b = $('#axcMailB', authRoot);
-        if (!b) return;
+        if (!b || !box || box.classList.contains('arrived')) return;
         if (m) {
-          b.innerHTML = `📬 <b>Correo entrante descargado</b><br>
-            De: <b>${esc(m.from)}</b> · Para: <b>${esc(m.to)}</b><br>
-            Asunto: <b>${esc(m.subject)}</b> · ${new Date(m.ts).toLocaleTimeString()}<br>
-            <button class="axcui-btn ok" id="axcApply" style="margin-top:10px;padding:9px">👁 Mostrar el código y aplicarlo</button>`;
-          const ap = $('#axcApply', authRoot);
-          if (ap) ap.addEventListener('click', () => {
-            String(m.code).split('').forEach((c, j) => { if (inputs[j]) inputs[j].value = c; });
-            toast('Código aplicado desde el Buzón axc ✓');
-            doVerify();
-          });
+          box.classList.remove('waiting');
+          box.classList.add('arrived');
+          b.innerHTML = `📬 <b>¡Código recibido!</b> · de <b>${esc(m.from)}</b> · hace un instante`;
+          b.insertAdjacentHTML('afterend',
+            `<div class="axccode">${String(m.code).split('').map(d => `<i>${d}</i>`).join('')}</div>
+             <div style="text-align:center;font-size:12px;color:#7ff0b0;margin-bottom:4px">✓ Se escribió automáticamente abajo</div>`);
+          setCode(m.code);
           clearInterval(mailPoll); mailPoll = null;
-        } else {
-          b.innerHTML = '<span style="opacity:.65">Descargando correo del servidor…</span>';
+          toast('📬 Código recibido en el Buzón axc ✓');
+        } else if (!box.classList.contains('arrived')) {
+          const secs = Math.round((Date.now() - (pollMail.t0 || (pollMail.t0 = Date.now()))) / 1000);
+          b.innerHTML = `<span class="axcenv">✉️</span>Esperando el correo del servidor… <span style="opacity:.55">(${secs}s)</span>`;
+          if (secs > 18) b.innerHTML += `<br><span style="font-size:12px;color:#f5b942">¿Tarda más de 20s? Pulsa <b>Reenviar código</b>: el servidor a veces se despierta.</span>`;
         }
       }
       clearInterval(mailPoll);
-      mailPoll = setInterval(() => { if (authRoot.classList.contains('open')) pollMail(); }, 4000);
+      pollMail.t0 = Date.now();
+      mailPoll = setInterval(pollMail, 2000);
       pollMail();
 
       async function doVerify() {
@@ -338,15 +571,19 @@ window.AXC_UI = (function () {
         if (resendLeft > 0) return;
         const r = await AXC.sendCode();
         if (r.ok) {
-          resendLeft = 60;
-          const b = $('#axcRb', authRoot);
+          const box = $('#axcMailBox', authRoot), b = $('#axcMailB', authRoot);
+          if (box) { box.classList.remove('arrived'); box.classList.add('waiting'); const cd = box.querySelector('.axccode'); if (cd) cd.remove(); const note = box.querySelector('div[style]'); }
+          if (b) { b.innerHTML = '<span class="axcenv">✉️</span>Esperando el correo del servidor…'; }
+          pollMail.t0 = Date.now();
+          clearInterval(mailPoll); mailPoll = setInterval(pollMail, 2000); pollMail();
+          resendLeft = 45;
+          const btn = $('#axcRb', authRoot);
           const tick = () => {
-            if (resendLeft <= 0) { clearTimeout(resendT); b.textContent = 'Reenviar código'; b.disabled = false; return; }
-            b.textContent = 'Reenviar en ' + resendLeft + 's'; b.disabled = true; resendLeft--;
+            if (resendLeft <= 0) { clearTimeout(resendT); btn.textContent = 'Reenviar código'; btn.disabled = false; return; }
+            btn.textContent = 'Reenviar en ' + resendLeft + 's'; btn.disabled = true; resendLeft--;
             resendT = setTimeout(tick, 1000);
           };
           tick();
-          clearInterval(mailPoll); mailPoll = setInterval(() => { if (authRoot.classList.contains('open')) pollMail(); }, 4000); pollMail();
           toast('Código reenviado ✓');
         } else { const e = $('#axcErr', authRoot); e.style.display = 'block'; e.textContent = r.error; }
       });
@@ -395,16 +632,15 @@ window.AXC_UI = (function () {
     opts = opts || {};
     Object.assign(instCfg, opts.install || {});
     Object.assign(handlers, opts);
-    /* primero registrar los handlers, luego arrancar (para no perder el evento
-       de sesión restaurada al cargar la página) */
     AXC.on('auth', u => { renderChip(); if (handlers.onAuth) handlers.onAuth(u); });
     AXC.on('presence', n => { if (handlers.onPresence) handlers.onPresence(n); });
     AXC.on('status', s => { const d = authRoot.querySelector('.axcui-dots'); if (d && authRoot.classList.contains('open')) d.outerHTML = dots(); if (handlers.onStatus) handlers.onStatus(s); });
     AXC.on('pulse', () => dispatchEvent(new CustomEvent('axc:pulse')));
-    AXC.on('mailpush', () => { /* si el WS empuja el código, la vista lo descarga al refrescar */ });
+    AXC.on('mailpush', () => { if (authRoot.classList.contains('open')) { const b = $('#axcMailB', authRoot); } });
     if (opts.chip) mountChip(opts.chip);
     await AXC.init(opts.axc || {});
     renderChip();
+    autoGlow();
     if (handlers.onAuth) handlers.onAuth(AXC.state.user);
     return AXC.state;
   }
@@ -414,7 +650,9 @@ window.AXC_UI = (function () {
     openAuth, closeAuth,
     openInstall, closeInstall, nativeInstall,
     mountChip,
-    canPlay: () => !!AXC.state.user && AXC.standalone(),
+    /* los juegos ya NO requieren app instalada: solo sesión */
+    canPlay: () => !!AXC.state.user,
+    launchGame, closeGame,
     standalone: () => AXC.standalone(),
     installReady: () => !!deferredPrompt,
     uaDevice

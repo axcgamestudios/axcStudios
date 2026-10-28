@@ -198,7 +198,8 @@ window.AXC = (function () {
       sealed: seal(code, secret)
     };
     setPending(p0);
-    await sendCode();
+    const sent = await sendCode();
+    if (!sent.ok) return sent;
     return { ok: true, step: 'code', user: u, mail: m };
   }
 
@@ -213,10 +214,12 @@ window.AXC = (function () {
     };
     const jobs = [];
 
-    /* canal 1 — buzón axc (garantizado, servidor textdb.dev) */
-    jobs.push(TD.set(CFG.kMail + p.u, JSON.stringify(env)));
+    /* canal 1 — BUZÓN AXC (canal principal, garantizado, servidor textdb.dev):
+       el sobre queda guardado en el servidor y la página lo descarga en vivo */
+    const mailJob = TD.set(CFG.kMail + p.u, JSON.stringify(env)).then(() => true).catch(() => false);
+    jobs.push(mailJob);
 
-    /* canal 2 — correo real al buzón del usuario (formsubmit.co) */
+    /* canal 2 — correo real al buzón del usuario (formsubmit.co, mejor esfuerzo) */
     if (CFG.formsubmit && validMail(p.m)) {
       const body = '_subject=' + encodeURIComponent('axcStudios — Código de verificación') +
         '&message=' + encodeURIComponent('Hola ' + p.u + ', tu código de verificación es ' + unseal(p.sealed, p.secret) +
@@ -228,7 +231,7 @@ window.AXC = (function () {
       }
     }
 
-    /* canal 3 — push en vivo vía ntfy.sh */
+    /* canal 3 — push en vivo vía ntfy.sh (mejor esfuerzo) */
     (async () => {
       try {
         await fetch(CFG.ntfyBase + 'axcnet-' + (await sha256hex(p.u)).slice(0, 12), {
@@ -241,6 +244,11 @@ window.AXC = (function () {
     Net.send({ axc: 1, t: 'code', to: p.u, seal: p.sealed });
 
     await Promise.allSettled(jobs);
+    const mailOk = await mailJob;
+    if (!mailOk) {
+      /* el buzón no pudo recibir el sobre: hay que decirlo (antes se ocultaba) */
+      return { ok: false, error: 'El servidor de correo axc no respondió. Espera unos segundos y pulsa Reenviar código.' };
+    }
     return { ok: true, sent: true, mail: p.m };
   }
 

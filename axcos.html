@@ -76,24 +76,25 @@ h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
   <div class="hero">
     <div class="kicker">axcStudios presenta</div>
     <h1 id="title">El sistema operativo<br><em>que vive en tu navegador</em></h1>
-    <p id="sub">axcOS es un escritorio completo: ventanas, apps y juegos integrados. Inicia sesión con tu cuenta axc y arranca el sistema.</p>
+    <p id="sub">axcOS es un escritorio completo: ventanas, apps y juegos integrados. Inicia sesión con tu cuenta axc y el sistema arranca aquí mismo, a pantalla completa — sin instalar nada.</p>
     <img class="hero-art" id="art" src="images/games/axcos.png" alt="axcOS, escritorio del sistema operativo web">
     <div class="acts" id="acts"></div>
     <div class="hints">
       <span class="hint">🔐 Requiere <b>tu cuenta axc</b></span>
-      <span class="hint">📦 Se instala como <b>app propia</b></span>
+      <span class="hint">🖥 Corre <b>aquí, sin instalar nada</b></span>
+      <span class="hint">📦 Instalable como app · <b>opcional</b></span>
       <span class="hint">🔗 Mismo estudio que los <b>FNAF</b></span>
     </div>
   </div>
 </section>
 
-<!-- axcOS a pantalla completa (sesión + app instalada) -->
+<!-- axcOS a pantalla completa (solo requiere sesión; instalar es opcional) -->
 <div id="axcosFull">
   <div class="axc-pill">
     <button class="pill" id="reloadPill" title="Reiniciar axcOS">⟳</button>
     <button class="pill" id="homePill">← axcStudios</button>
   </div>
-  <iframe id="frame" src="" title="axcOS" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; microphone; camera"></iframe>
+  <iframe id="frame" title="axcOS" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; microphone; camera"></iframe>
 </div>
 
 <div class="netline" id="netline"><i></i><span id="netlabel">red axc…</span></div>
@@ -121,47 +122,37 @@ function net() {
 }
 
 function refresh() {
-  const u = AXC.state.user, sa = AXC.standalone();
+  const u = AXC.state.user;
   const acts = document.getElementById('acts');
   const full = document.getElementById('axcosFull');
   const frame = document.getElementById('frame');
-  if (u && sa) {
-    /* ¡dentro de la app instalada con sesión! → arrancar axcOS a pantalla completa */
+  if (u) {
+    /* con sesión basta: axcOS arranca aquí mismo, a pantalla completa */
     document.getElementById('stage').style.display = 'none';
     full.classList.add('on');
-    if (!frame.src) frame.src = 'https://axcgamestudios.github.io/eosaxroom/';
+    if (!frame.getAttribute('src')) frame.src = 'https://axcgamestudios.github.io/eosaxroom/';
     net();
     return;
   }
   document.getElementById('stage').style.display = '';
   full.classList.remove('on');
-  if (!u) {
-    document.getElementById('title').innerHTML = 'Primero,<br><em>tu cuenta axc</em>';
-    document.getElementById('sub').textContent = 'axcOS es para miembros del estudio: crea tu cuenta (usuario, correo y contraseña) o inicia sesión. La misma cuenta te sirve en todas las páginas axc.';
-    acts.innerHTML =
-      '<button class="btn btn-primary" id="aSignup">✨ Crear mi cuenta</button>' +
-      '<button class="btn btn-ghost" id="aLogin">Ya tengo cuenta</button>';
-    document.getElementById('aSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
-    document.getElementById('aLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
-  } else {
-    document.getElementById('title').innerHTML = 'Instala axcOS<br><em>como aplicación</em>';
-    document.getElementById('sub').textContent = 'Ya tienes sesión, ' + u.u + '. axcOS corre dentro de su propia app instalada (a pantalla completa, como un sistema operativo de verdad). Instálala con un clic:';
-    acts.innerHTML =
-      '<button class="btn btn-primary" id="aInstall">⤓ Instalar axcOS ahora</button>' +
-      '<button class="btn btn-ghost" id="aHelp">¿Cómo se instala?</button>';
-    document.getElementById('aInstall').addEventListener('click', () => AXC_UI.nativeInstall());
-    document.getElementById('aHelp').addEventListener('click', () => AXC_UI.openInstall({ app: 'axcos', name: 'axcOS', icon: 'images/axcos-icon-512.png' }));
-  }
+  document.getElementById('title').innerHTML = 'Primero,<br><em>tu cuenta axc</em>';
+  document.getElementById('sub').textContent = 'axcOS es para miembros del estudio: crea tu cuenta (usuario, correo y contraseña) o inicia sesión. La misma cuenta te sirve en todas las páginas axc.';
+  acts.innerHTML =
+    '<button class="btn btn-primary" id="aSignup">✨ Crear mi cuenta</button>' +
+    '<button class="btn btn-ghost" id="aLogin">Ya tengo cuenta</button>';
+  document.getElementById('aSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
+  document.getElementById('aLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
 }
 
 document.getElementById('homePill').addEventListener('click', () => location.href = 'store.html');
 document.getElementById('reloadPill').addEventListener('click', () => { document.getElementById('frame').src = 'https://axcgamestudios.github.io/eosaxroom/'; });
 
-/* ¿llegó con ?install=1? → preparar instalación */
+/* ¿llegó con ?install=1? → ofrecer instalación OPCIONAL */
 if (new URLSearchParams(location.search).get('install') === '1' && !AXC.standalone()) {
   setTimeout(() => {
-    if (AXC.state.user && AXC_UI.installReady()) AXC_UI.nativeInstall();
-    else if (AXC.state.user) AXC_UI.openInstall({ app: 'axcos', name: 'axcOS', icon: 'images/axcos-icon-512.png' });
+    if (AXC_UI.installReady()) AXC_UI.nativeInstall();
+    else AXC_UI.openInstall({ app: 'axcos', name: 'axcOS', icon: 'images/axcos-icon-512.png' });
   }, 2200);
 }
 
