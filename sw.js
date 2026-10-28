@@ -1,14 +1,31 @@
 /* axcStudios — Service Worker
-   Requerido para que el navegador ofrezca "Instalar página como aplicación" (PWA real). */
-const CACHE = 'axcstudios-v3';
+   Da soporte PWA (instalación como app real) a las 3 apps del repo:
+   index.html (sitio), store.html (tienda) y axcos.html (sistema operativo). */
+const CACHE = 'axcstudios-v4';
 const CORE = [
   './',
   './index.html',
+  './store.html',
+  './axcos.html',
+  './player.html',
+  './cuenta-demo.html',
   './manifest.webmanifest',
+  './manifest-store.webmanifest',
+  './manifest-axcos.webmanifest',
+  './axc-auth.js',
+  './axc-ui.js',
+  './axc-bg.js',
+  './games-data.js',
   './images/logo.png',
   './images/icon-192.png',
   './images/icon-512.png',
   './images/icon-maskable-512.png',
+  './images/store-icon-192.png',
+  './images/store-icon-512.png',
+  './images/store-icon-maskable-512.png',
+  './images/axcos-icon-192.png',
+  './images/axcos-icon-512.png',
+  './images/axcos-icon-maskable-512.png',
   './images/games/geometry-dash.png',
   './images/games/rocket-league.png',
   './images/games/angry-birds-epic.png',
@@ -48,18 +65,27 @@ self.addEventListener('activate', (e) => {
   })());
 });
 
-/* Cache-first con actualización en segundo plano */
+/* Fetch: red-primero para código (HTML/JS/manifests → las actualizaciones llegan al instante),
+   caché-primero para imágenes (portadas grandes). Fallback offline al caché. */
+const RE_NET_FIRST = /\.(?:html|js|webmanifest|css)$/i;
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  if (url.origin !== location.origin) return; /* los juegos externos e iframes no se cachean */
   e.respondWith((async () => {
     const cached = await caches.match(e.request);
-    const fetchAndCache = fetch(e.request).then((res) => {
+    const useNetFirst = RE_NET_FIRST.test(url.pathname) || url.pathname.endsWith('/') || url.pathname.endsWith('axcStudios/');
+    if (!useNetFirst && cached) return cached;
+    try {
+      const res = await fetch(e.request);
       if (res && res.status === 200 && res.type === 'basic') {
         const clone = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, clone));
       }
       return res;
-    }).catch(() => cached);
-    return cached || fetchAndCache;
+    } catch (err) {
+      if (cached) return cached;
+      throw err;
+    }
   })());
 });

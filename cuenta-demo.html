@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo — Sistema de Cuentas axc en cualquier página</title>
+<!-- ============================================================================
+  EJEMPLO MÍNIMO: cómo agregar el Sistema de Cuentas axc a CUALQUIER página,
+  incluso de OTRO repositorio u otro dominio github.io.
+  Solo necesitas los 2 <script> de abajo y unas líneas de JS.
+  Guía completa en SISTEMA-CUENTAS.md
+============================================================================ -->
+<style>
+body{margin:0;font-family:'Inter',system-ui,sans-serif;background:#06070d;color:#f5f6f7;
+  display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.card{max-width:460px;width:100%;background:#0e1220;border:1px solid rgba(46,124,246,.3);
+  border-radius:22px;padding:30px;text-align:center}
+.card h1{font-size:1.4rem;margin:0 0 8px}
+.card p{color:rgba(245,246,247,.6);font-size:.9rem;line-height:1.6}
+.estado{margin:18px 0;padding:12px;border-radius:12px;font-size:.9rem}
+.estado.fuera{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3)}
+.estado.dentro{background:rgba(24,201,100,.1);border:1px solid rgba(24,201,100,.3)}
+button{padding:13px 22px;border:0;border-radius:13px;cursor:pointer;margin:4px;
+  font-weight:700;font-size:.9rem;font-family:'Space Grotesk',sans-serif}
+.pri{background:linear-gradient(135deg,#2e7cf6,#1b5fd9);color:#fff}
+.gho{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);color:#f5f6f7}
+code{color:#38e8ff;font-size:.78rem}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🎮 Mi juego con cuenta axc</h1>
+  <p>Página de ejemplo: esta web <strong>no es de axcStudios</strong>, pero usa el mismo
+  sistema central → la cuenta que creaste en la tienda funciona aquí (SSO real).</p>
+
+  <div class="estado fuera" id="estado">Sin sesión: el juego está bloqueado.</div>
+
+  <button class="pri" id="btnJugar">▶ Jugar (requiere cuenta)</button>
+  <button class="gho" id="btnCuenta">👤 Mi cuenta</button>
+
+  <p style="margin-top:16px">Código de esta página: solo 2 scripts + 10 líneas. Ver
+  <code>SISTEMA-CUENTAS.md</code>.</p>
+</div>
+
+<!-- 1) LA BIBLIOTECA (sirve desde cualquier dominio) -->
+<script src="https://axcgamestudios.github.io/axcStudios/axc-auth.js"></script>
+<script src="https://axcgamestudios.github.io/axcStudios/axc-ui.js"></script>
+<script>
+/* 2) INICIAR + REACCIONAR A LA SESIÓN */
+AXC_UI.init({ onAuth: actualizar });
+
+function actualizar(usuario) {
+  const e = document.getElementById('estado');
+  if (usuario) {
+    e.className = 'estado dentro';
+    e.textContent = '✓ Sesión iniciada como ' + usuario.u + ' — ¡a jugar!';
+  } else {
+    e.className = 'estado fuera';
+    e.textContent = 'Sin sesión: el juego está bloqueado.';
+  }
+}
+
+/* 3) PROTEGER CONTENIDO */
+document.getElementById('btnJugar').addEventListener('click', () => {
+  if (!AXC.state.user) return AXC_UI.openAuth('login');   // pide cuenta (login o signup)
+  alert('¡A jugar, ' + AXC.state.user.u + '!');
+});
+document.getElementById('btnCuenta').addEventListener('click', () => AXC_UI.openAuth('login'));
+
+actualizar(AXC.state.user);
+</script>
+</body>
+</html>

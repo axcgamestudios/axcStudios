@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>axcOS — Sistema operativo web</title>
+<meta name="description" content="axcOS: el sistema operativo web de axcStudios. Escritorio completo, ventanas y apps, instalado como aplicación.">
+<meta name="theme-color" content="#2e7cf6">
+<link rel="icon" href="images/axcos-icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="images/axcos-icon-192.png">
+<link rel="manifest" href="manifest-axcos.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--border:rgba(255,255,255,.08);
+  --text-primary:#f5f6f7;--text-secondary:rgba(245,246,247,.62);--text-tertiary:rgba(245,246,247,.4);
+  --accent:#2e7cf6;--accent-deep:#1b5fd9;--cyan:#38e8ff;
+  --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
+.bg-aurora{position:fixed;inset:-20%;z-index:-2;background:
+  radial-gradient(55% 45% at 20% 10%,rgba(46,124,246,.17),transparent 60%),
+  radial-gradient(50% 42% at 80% 8%,rgba(139,92,246,.12),transparent 60%),#06070d;animation:aur 24s ease-in-out infinite alternate}
+@keyframes aur{to{transform:rotate(2deg) scale(1.1)}}
+.bg-vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 90% at 50% 0%,transparent 55%,rgba(4,5,10,.75) 100%)}
+
+.stage{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:110px 22px 60px}
+.hero{max-width:880px;width:100%;text-align:center;animation:in .6s var(--ease-out)}
+@keyframes in{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.kicker{font-family:var(--font-display);font-size:.7rem;font-weight:700;letter-spacing:2.8px;text-transform:uppercase;color:var(--cyan);margin-bottom:14px}
+.hero h1{font-size:clamp(2.4rem,5.5vw,4.2rem);line-height:1.04;margin-bottom:16px}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent),var(--cyan));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--text-secondary);max-width:520px;margin:0 auto 30px;line-height:1.75}
+.hero-art{width:min(560px,88vw);aspect-ratio:16/9;object-fit:cover;border-radius:24px;margin:0 auto 34px;
+  border:1px solid rgba(46,124,246,.35);box-shadow:0 40px 110px rgba(0,0,0,.6),0 0 90px rgba(46,124,246,.22)}
+.acts{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:15px 28px;border-radius:15px;border:0;cursor:pointer;
+  font-family:var(--font-display);font-weight:700;font-size:.95rem;transition:.3s var(--ease-out)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 10px 34px rgba(46,124,246,.45)}
+.btn-primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:var(--text-primary)}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.hints{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.hint{font-size:.72rem;color:var(--text-tertiary);border:1px solid var(--border);border-radius:999px;padding:6px 13px}
+.hint b{color:var(--cyan)}
+.netline{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;
+  font-size:.74rem;color:var(--text-tertiary);font-family:var(--font-display)}
+.netline i{width:8px;height:8px;border-radius:50%;background:#5a6274}
+.netline.on i{background:#18c964;box-shadow:0 0 10px rgba(24,201,100,.9)}
+/* axcOS a pantalla completa */
+#axcosFull{display:none;position:fixed;inset:0;z-index:50;background:#05060a}
+#axcosFull.on{display:block}
+#axcosFull iframe{width:100%;height:100%;border:0;display:block}
+.axc-pill{position:fixed;top:14px;right:14px;z-index:60;display:flex;gap:8px}
+.pill{display:flex;align-items:center;gap:7px;padding:10px 15px;border-radius:12px;border:1px solid rgba(255,255,255,.16);
+  background:rgba(10,13,22,.75);backdrop-filter:blur(12px);color:#dfe5f0;font-family:var(--font-display);font-weight:600;font-size:.8rem;cursor:pointer;transition:.25s}
+.pill:hover{border-color:rgba(56,232,255,.5);color:#fff}
+</style>
+</head>
+<body>
+<div class="bg-aurora" aria-hidden="true"></div>
+<div class="bg-vignette" aria-hidden="true"></div>
+
+<!-- pantalla de bienvenida / instalación -->
+<section class="stage" id="stage">
+  <div class="hero">
+    <div class="kicker">axcStudios presenta</div>
+    <h1 id="title">El sistema operativo<br><em>que vive en tu navegador</em></h1>
+    <p id="sub">axcOS es un escritorio completo: ventanas, apps y juegos integrados. Inicia sesión con tu cuenta axc y arranca el sistema.</p>
+    <img class="hero-art" id="art" src="images/games/axcos.png" alt="axcOS, escritorio del sistema operativo web">
+    <div class="acts" id="acts"></div>
+    <div class="hints">
+      <span class="hint">🔐 Requiere <b>tu cuenta axc</b></span>
+      <span class="hint">📦 Se instala como <b>app propia</b></span>
+      <span class="hint">🔗 Mismo estudio que los <b>FNAF</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- axcOS a pantalla completa (sesión + app instalada) -->
+<div id="axcosFull">
+  <div class="axc-pill">
+    <button class="pill" id="reloadPill" title="Reiniciar axcOS">⟳</button>
+    <button class="pill" id="homePill">← axcStudios</button>
+  </div>
+  <iframe id="frame" src="" title="axcOS" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; microphone; camera"></iframe>
+</div>
+
+<div class="netline" id="netline"><i></i><span id="netlabel">red axc…</span></div>
+
+<script src="axc-auth.js"></script>
+<script src="axc-ui.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { }));
+}
+
+AXC_UI.init({
+  chip: null,
+  install: { app: 'axcos', name: 'axcOS', icon: 'images/axcos-icon-512.png' },
+  onAuth: refresh,
+  onStatus: net,
+  onPresence: net
+});
+
+function net() {
+  const s = AXC.state, l = document.getElementById('netline'), t = document.getElementById('netlabel');
+  l.classList.toggle('on', s.ws === 'online');
+  t.textContent = s.ws === 'online' ? (s.presence > 1 ? s.presence + ' en la red axc' : 'red axc activa') :
+    s.ws === 'connecting' ? 'conectando red axc…' : 'red axc dormida';
+}
+
+function refresh() {
+  const u = AXC.state.user, sa = AXC.standalone();
+  const acts = document.getElementById('acts');
+  const full = document.getElementById('axcosFull');
+  const frame = document.getElementById('frame');
+  if (u && sa) {
+    /* ¡dentro de la app instalada con sesión! → arrancar axcOS a pantalla completa */
+    document.getElementById('stage').style.display = 'none';
+    full.classList.add('on');
+    if (!frame.src) frame.src = 'https://axcgamestudios.github.io/eosaxroom/';
+    net();
+    return;
+  }
+  document.getElementById('stage').style.display = '';
+  full.classList.remove('on');
+  if (!u) {
+    document.getElementById('title').innerHTML = 'Primero,<br><em>tu cuenta axc</em>';
+    document.getElementById('sub').textContent = 'axcOS es para miembros del estudio: crea tu cuenta (usuario, correo y contraseña) o inicia sesión. La misma cuenta te sirve en todas las páginas axc.';
+    acts.innerHTML =
+      '<button class="btn btn-primary" id="aSignup">✨ Crear mi cuenta</button>' +
+      '<button class="btn btn-ghost" id="aLogin">Ya tengo cuenta</button>';
+    document.getElementById('aSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
+    document.getElementById('aLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
+  } else {
+    document.getElementById('title').innerHTML = 'Instala axcOS<br><em>como aplicación</em>';
+    document.getElementById('sub').textContent = 'Ya tienes sesión, ' + u.u + '. axcOS corre dentro de su propia app instalada (a pantalla completa, como un sistema operativo de verdad). Instálala con un clic:';
+    acts.innerHTML =
+      '<button class="btn btn-primary" id="aInstall">⤓ Instalar axcOS ahora</button>' +
+      '<button class="btn btn-ghost" id="aHelp">¿Cómo se instala?</button>';
+    document.getElementById('aInstall').addEventListener('click', () => AXC_UI.nativeInstall());
+    document.getElementById('aHelp').addEventListener('click', () => AXC_UI.openInstall({ app: 'axcos', name: 'axcOS', icon: 'images/axcos-icon-512.png' }));
+  }
+}
+
+document.getElementById('homePill').addEventListener('click', () => location.href = 'store.html');
+document.getElementById('reloadPill').addEventListener('click', () => { document.getElementById('frame').src = 'https://axcgamestudios.github.io/eosaxroom/'; });
+
+/* ¿llegó con ?install=1? → preparar instalación */
+if (new URLSearchParams(location.search).get('install') === '1' && !AXC.standalone()) {
+  setTimeout(() => {
+    if (AXC.state.user && AXC_UI.installReady()) AXC_UI.nativeInstall();
+    else if (AXC.state.user) AXC_UI.openInstall({ app: 'axcos', name: 'axcOS', icon: 'images/axcos-icon-512.png' });
+  }, 2200);
+}
+
+refresh();
+net();
+</script>
+</body>
+</html>

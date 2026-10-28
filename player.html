@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jugar — axcStudios Games</title>
+<meta name="description" content="Reproductor de juegos de axcStudios: juega dentro de la app instalada, a pantalla completa.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="images/store-icon-192.png" type="image/png">
+<link rel="manifest" href="manifest-store.webmanifest">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --border:rgba(255,255,255,.08);--text-primary:#f5f6f7;--text-secondary:rgba(245,246,247,.62);--text-tertiary:rgba(245,246,247,.4);
+  --accent:#2e7cf6;--accent-deep:#1b5fd9;--cyan:#38e8ff;
+  --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;--ease-out:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06070d;color:var(--text-primary);font-family:var(--font-body);height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;gap:12px;padding:9px 14px;
+  background:rgba(8,9,14,.82);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07)}
+.back{display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:11px;border:1px solid var(--border);
+  background:rgba(255,255,255,.05);color:var(--text-secondary);font-family:var(--font-display);font-weight:600;font-size:.82rem;cursor:pointer;transition:.25s}
+.back:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+.gt{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.gt img{width:30px;height:30px;border-radius:8px;object-fit:cover}
+.gt b{font-family:var(--font-display);font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt span{font-size:.66rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);white-space:nowrap}
+.ext{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:11px;border:1px solid rgba(46,124,246,.4);
+  background:rgba(46,124,246,.12);color:#cfe2ff;font-family:var(--font-display);font-weight:600;font-size:.82rem;cursor:pointer;transition:.25s}
+.ext:hover{background:rgba(46,124,246,.25);color:#fff}
+#frameWrap{position:fixed;inset:0;top:0;padding-top:48px;background:#06070d}
+#frameWrap.nobar{padding-top:0}
+iframe{width:100%;height:100%;border:0;display:block;background:#06070d}
+/* gate */
+.gate{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(90% 80% at 50% 30%,rgba(46,124,246,.14),rgba(4,5,10,.94) 70%);backdrop-filter:blur(8px)}
+.gate.show{display:flex}
+.gate-card{max-width:430px;width:100%;text-align:center;background:linear-gradient(165deg,#101322,#0b0d18);
+  border:1px solid rgba(46,124,246,.25);border-radius:24px;padding:34px 30px;box-shadow:0 40px 110px rgba(0,0,0,.65)}
+.gate-card img{width:130px;height:130px;object-fit:cover;border-radius:20px;margin:0 auto 18px;border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.gate-card h2{font-size:1.5rem;margin-bottom:10px}
+.gate-card p{color:var(--text-secondary);font-size:.92rem;line-height:1.7;margin-bottom:22px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:14px;border:0;cursor:pointer;
+  font-family:var(--font-display);font-weight:700;font-size:.9rem;transition:.3s var(--ease-out)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 10px 30px rgba(46,124,246,.4)}
+.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:var(--text-primary)}
+.acts{display:flex;gap:11px;justify-content:center;flex-wrap:wrap}
+/* cargando */
+.loading{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:#06070d;transition:opacity .6s var(--ease-out);pointer-events:none}
+.loading.off{opacity:0}
+.spin{width:44px;height:44px;border-radius:50%;border:3px solid rgba(46,124,246,.2);border-top-color:var(--cyan);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.loading b{font-family:var(--font-display);font-size:.95rem;color:var(--text-secondary)}
+</style>
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <button class="back" id="backBtn">← Tienda</button>
+  <div class="gt" id="gt"><img id="gImg" src="" alt=""><b id="gTitle"></b><span id="gGenre"></span></div>
+  <button class="ext" id="extBtn">↗ Abrir en navegador</button>
+</div>
+
+<div id="frameWrap">
+  <iframe id="frame" src="" title="Juego" allow="autoplay; fullscreen; gamepad; fullscreen; clipboard-read; clipboard-write; microphone"></iframe>
+</div>
+
+<div class="loading" id="loading"><div class="spin"></div><b>Arrancando el juego…</b></div>
+
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <img id="gateImg" src="" alt="">
+    <h2 id="gateTitle"></h2>
+    <p id="gateText"></p>
+    <div class="acts" id="gateActs"></div>
+  </div>
+</div>
+
+<script src="axc-auth.js"></script>
+<script src="axc-ui.js"></script>
+<script src="games-data.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { }));
+}
+
+const id = location.hash.replace('#', '');
+const game = window.AXC_GAMES.find(g => g.id === id);
+
+AXC_UI.init({
+  chip: null,
+  install: { app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' },
+  onAuth: refresh
+});
+
+document.getElementById('backBtn').addEventListener('click', () => location.href = 'store.html');
+
+if (!game) {
+  document.getElementById('gateTitle').textContent = 'Juego no encontrado';
+  document.getElementById('gateText').textContent = 'El enlace no corresponde a ningún juego del catálogo. Vuelve a la tienda y elige uno.';
+  document.getElementById('gateActs').innerHTML = '<button class="btn btn-primary" onclick="location.href=\'store.html\'">← Volver a la tienda</button>';
+  document.getElementById('gateImg').src = 'images/store-icon-512.png';
+  document.getElementById('gate').classList.add('show');
+  document.getElementById('loading').classList.add('off');
+} else {
+  document.getElementById('gImg').src = game.img;
+  document.getElementById('gTitle').textContent = game.title;
+  document.getElementById('gGenre').textContent = game.genre;
+  document.getElementById('extBtn').addEventListener('click', () => window.open(game.url, '_blank', 'noopener'));
+  document.getElementById('gateImg').src = game.img;
+  refresh();
+}
+
+function refresh() {
+  if (!game) return;
+  const u = AXC.state.user, sa = AXC.standalone();
+  const gate = document.getElementById('gate');
+  const frame = document.getElementById('frame');
+  if (u && sa) {
+    gate.classList.remove('show');
+    if (!frame.src) {
+      frame.src = game.url;
+      frame.addEventListener('load', () => document.getElementById('loading').classList.add('off'), { once: true });
+      setTimeout(() => document.getElementById('loading').classList.add('off'), 9000);
+    }
+    return;
+  }
+  document.getElementById('loading').classList.add('off');
+  gate.classList.add('show');
+  if (!u) {
+    document.getElementById('gateTitle').textContent = game.title + ' es para miembros';
+    document.getElementById('gateText').textContent = 'Inicia sesión con tu cuenta axc para jugar. La misma cuenta te sirve en toda la tienda, axcOS y cualquier página axc.';
+    document.getElementById('gateActs').innerHTML =
+      '<button class="btn btn-primary" id="gSignup">✨ Crear cuenta</button>' +
+      '<button class="btn btn-ghost" id="gLogin">Ya tengo cuenta</button>';
+    document.getElementById('gSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
+    document.getElementById('gLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
+  } else {
+    document.getElementById('gateTitle').textContent = 'Juega dentro de la app 📦';
+    document.getElementById('gateText').textContent = 'Los juegos corren dentro de axcStudios Games instalada como aplicación (a pantalla completa, sin barra del navegador). Instálala y vuelve a entrar: tu sesión ya está lista, ' + u.u + '.';
+    document.getElementById('gateActs').innerHTML =
+      '<button class="btn btn-primary" id="gInstall">⤓ Instalar la tienda</button>' +
+      '<button class="btn btn-ghost" id="gHow">¿Cómo?</button>';
+    document.getElementById('gInstall').addEventListener('click', () => AXC_UI.nativeInstall());
+    document.getElementById('gHow').addEventListener('click', () => AXC_UI.openInstall({ app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' }));
+  }
+}
+</script>
+</body>
+</html>

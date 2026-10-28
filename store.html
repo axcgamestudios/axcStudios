@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>axcStudios Games — Tienda de juegos</title>
+<meta name="description" content="La tienda de juegos de axcStudios como app: 20+ juegos gratis, buscador, filtros y reproductor integrado.">
+<meta name="theme-color" content="#1b5fd9">
+<link rel="icon" href="images/store-icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="images/store-icon-192.png">
+<link rel="manifest" href="manifest-store.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0a;--bg-card:#16161b;--border:rgba(255,255,255,.08);
+  --text-primary:#f5f6f7;--text-secondary:rgba(245,246,247,.62);--text-tertiary:rgba(245,246,247,.4);
+  --accent:#2e7cf6;--accent-deep:#1b5fd9;--cyan:#38e8ff;
+  --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+h1,h2,h3{font-family:var(--font-display);letter-spacing:-.02em}
+@keyframes axc-in{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.bg-aurora{position:fixed;inset:-20%;z-index:-3;background:
+  radial-gradient(55% 45% at 15% 10%,rgba(46,124,246,.15),transparent 60%),
+  radial-gradient(50% 42% at 85% 6%,rgba(139,92,246,.10),transparent 60%),#06070d;animation:aur 22s ease-in-out infinite alternate}
+@keyframes aur{to{transform:rotate(2deg) scale(1.1)}}
+#bg3d{position:fixed;inset:0;z-index:-2;width:100vw;height:100vh;pointer-events:none}
+.bg-vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 90% at 50% 0%,transparent 55%,rgba(4,5,10,.75) 100%)}
+
+.topbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:14px;padding:13px 24px;
+  background:rgba(8,9,14,.6);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.02rem}
+.brand img{width:34px;height:34px;border-radius:10px;box-shadow:0 0 22px rgba(46,124,246,.5)}
+.brand em{font-style:normal;color:var(--accent)}
+.brand .tag{font-size:.55rem;font-weight:700;letter-spacing:1.6px;color:var(--cyan);border:1px solid rgba(56,232,255,.35);border-radius:6px;padding:2px 6px;text-transform:uppercase}
+.net-pill{display:flex;align-items:center;gap:7px;font-size:.72rem;color:var(--text-tertiary);font-family:var(--font-display)}
+.net-pill i{width:8px;height:8px;border-radius:50%;background:#5a6274;transition:.4s}
+.net-pill.on i{background:#18c964;box-shadow:0 0 10px rgba(24,201,100,.9)}
+.net-pill.wait i{background:#f5b942;animation:pd 1.2s infinite}
+@keyframes pd{50%{opacity:.25}}
+.spacer{flex:1}
+.install-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid rgba(46,124,246,.4);
+  background:rgba(46,124,246,.12);color:#cfe2ff;font-family:var(--font-display);font-weight:600;font-size:.84rem;cursor:pointer;transition:.3s var(--ease-out)}
+.install-btn:hover{background:rgba(46,124,246,.25)}
+.install-btn.ready{border-color:var(--cyan);box-shadow:0 0 24px rgba(56,232,255,.35);color:#dffaff}
+.btn-home{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:12px;border:1px solid var(--border);
+  background:rgba(255,255,255,.05);color:var(--text-secondary);font-family:var(--font-display);font-weight:600;font-size:.84rem;cursor:pointer;transition:.3s}
+.btn-home:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+
+.wrap{max-width:1340px;margin:0 auto;padding:30px 24px 80px}
+.store-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+.kicker{font-family:var(--font-display);font-size:.7rem;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px}
+.store-hero h1{font-size:clamp(1.9rem,3.6vw,3rem);line-height:1.05}
+.store-hero p{color:var(--text-secondary);margin-top:8px;max-width:560px;line-height:1.65}
+.hbadges{display:flex;gap:8px;flex-wrap:wrap}
+.hbadge{font-size:.7rem;font-weight:600;color:var(--text-secondary);border:1px solid var(--border);border-radius:999px;padding:6px 12px;background:rgba(255,255,255,.03)}
+.hbadge b{color:var(--cyan)}
+.banner-install{display:none;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px;padding:16px 20px;border-radius:18px;
+  border:1px solid rgba(56,232,255,.3);background:linear-gradient(120deg,rgba(46,124,246,.14),rgba(56,232,255,.05))}
+.banner-install.show{display:flex}
+.banner-install b{font-family:var(--font-display);font-size:.95rem}
+.banner-install p{flex:1;min-width:220px;font-size:.85rem;color:var(--text-secondary);line-height:1.55}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border-radius:13px;border:0;cursor:pointer;
+  font-family:var(--font-display);font-weight:700;font-size:.9rem;transition:.3s var(--ease-out)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 8px 26px rgba(46,124,246,.4)}
+.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:var(--text-primary)}
+
+.tools{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:24px}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;padding:13px 16px 13px 44px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.045);
+  color:var(--text-primary);outline:none;font-size:.95rem;font-family:inherit;transition:.3s}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,124,246,.16)}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:var(--text-tertiary);fill:none;stroke-width:2}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:10px 17px;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,.04);
+  color:var(--text-secondary);font-family:var(--font-display);font-weight:600;font-size:.82rem;cursor:pointer;transition:.3s}
+.chip:hover{color:#fff;border-color:rgba(46,124,246,.5)}
+.chip.on{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(46,124,246,.4)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.game-card{border-radius:20px;overflow:hidden;background:var(--bg-card);border:1px solid var(--border);transition:all .45s var(--ease-out);display:flex;flex-direction:column}
+.game-card:hover{transform:translateY(-8px);border-color:rgba(46,124,246,.5);box-shadow:0 26px 60px rgba(0,0,0,.5)}
+.game-cover{position:relative;aspect-ratio:3/4;overflow:hidden}
+.game-cover img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
+.game-card:hover .game-cover img{transform:scale(1.07)}
+.game-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(10,10,15,.9))}
+.badge{position:absolute;top:12px;left:12px;z-index:2;display:flex;align-items:center;gap:5px;font-size:.66rem;font-weight:700;
+  color:#01131f;background:linear-gradient(135deg,var(--cyan),var(--accent));border-radius:8px;padding:5px 9px}
+.game-body{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
+.game-genre{font-size:.68rem;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.game-title{font-family:var(--font-display);font-size:1.08rem;font-weight:700;margin-bottom:7px}
+.game-desc{font-size:.83rem;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;flex:1}
+.game-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn-play{display:flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:var(--font-display);font-weight:700;font-size:.86rem;transition:.3s}
+.btn-play:hover{box-shadow:0 8px 26px rgba(46,124,246,.55);transform:translateY(-1px)}
+.btn-play svg{width:12px;height:12px;fill:#fff}
+.free-tag{font-size:.66rem;font-weight:700;letter-spacing:1.2px;color:#18c964;border:1px solid rgba(24,201,100,.4);border-radius:7px;padding:4px 8px}
+.empty{grid-column:1/-1;text-align:center;color:var(--text-tertiary);padding:60px 0}
+footer{border-top:1px solid var(--border);padding:26px 24px;text-align:center;color:var(--text-tertiary);font-size:.82rem}
+footer a{color:var(--text-secondary);cursor:pointer}
+footer a:hover{color:var(--accent)}
+
+@media(max-width:1200px){.grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}.net-pill{display:none}}
+@media(max-width:540px){
+  .wrap{padding:20px 14px 60px}
+  .grid{gap:12px}
+  .game-body{padding:12px 12px 14px}
+  .game-title{font-size:.92rem}
+  .game-desc{display:none}
+  .btn-play{font-size:.78rem;padding:9px 14px}
+  .install-btn span{display:none}
+  .install-btn{padding:10px 12px}
+  .brand .tag{display:none}
+}
+</style>
+</head>
+<body>
+<div class="bg-aurora" aria-hidden="true"></div>
+<canvas id="bg3d" aria-hidden="true"></canvas>
+<div class="bg-vignette" aria-hidden="true"></div>
+
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <img src="images/store-icon-192.png" alt="axcStudios Games">
+    <span>axc<em>Studios</em> Games</span>
+    <span class="tag">app</span>
+  </a>
+  <span class="net-pill" id="netPill"><i></i><span id="netLabel">red axc…</span></span>
+  <div class="spacer"></div>
+  <button class="btn-home" onclick="location.href='index.html'">← Estudio</button>
+  <button class="install-btn" id="installBtn" data-axc-install-ready>⤓ <span>Instalar esta app</span></button>
+  <div id="accountChip"></div>
+</header>
+
+<div class="wrap">
+  <div class="store-hero">
+    <div>
+      <div class="kicker">Games Store · axcStudios</div>
+      <h1>Tu tienda de juegos web</h1>
+      <p>20+ juegos gratis del estudio. Con sesión iniciada puedes ver el catálogo completo; para <strong>jugar</strong>, instala esta app y los juegos correrán dentro, a pantalla completa.</p>
+    </div>
+    <div class="hbadges">
+      <span class="hbadge" id="countBadge">20 juegos</span>
+      <span class="hbadge">🔒 <b>Sesión</b> para ver</span>
+      <span class="hbadge">📦 <b>App</b> para jugar</span>
+    </div>
+  </div>
+
+  <div class="banner-install" id="bannerInstall">
+    <b>📦 Juega dentro de la app</b>
+    <p>Instala <strong>axcStudios Games</strong> como aplicación: los juegos se abren a pantalla completa, sin barra del navegador, con tu sesión guardada.</p>
+    <button class="btn btn-primary" id="bannerBtn">⤓ Instalar ahora</button>
+  </div>
+
+  <div class="tools">
+    <div class="search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="search" placeholder="Buscar juegos…" autocomplete="off">
+    </div>
+    <div class="chips" id="filters">
+      <button class="chip on" data-f="all">Todos</button>
+      <button class="chip" data-f="arcade">Arcade</button>
+      <button class="chip" data-f="fnaf">FNAF</button>
+      <button class="chip" data-f="axc">axc Originals</button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer>
+  axcStudios Games · app oficial del estudio — <a onclick="location.href='index.html'">volver al estudio</a> · <a onclick="AXC_UI.openInstall({app:'store',name:'axcStudios Games',icon:'images/store-icon-512.png'})">cómo instalar</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="axc-bg.js"></script>
+<script src="axc-auth.js"></script>
+<script src="axc-ui.js"></script>
+<script src="games-data.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { }));
+}
+AXC_BG.init(document.getElementById('bg3d'), { lite: true });
+
+AXC_UI.init({
+  chip: '#accountChip',
+  install: { app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' },
+  onAuth: refresh,
+  onStatus: net,
+  onPresence: net
+});
+
+document.getElementById('installBtn').addEventListener('click', () => AXC_UI.nativeInstall());
+document.getElementById('bannerBtn').addEventListener('click', () => AXC_UI.nativeInstall());
+
+function net() {
+  const pill = document.getElementById('netPill'), lab = document.getElementById('netLabel');
+  const s = AXC.state;
+  pill.classList.remove('on', 'wait');
+  if (s.ws === 'online') { pill.classList.add('on'); lab.textContent = s.presence > 1 ? s.presence + ' en línea' : 'red axc activa'; }
+  else if (s.ws === 'connecting') { pill.classList.add('wait'); lab.textContent = 'conectando…'; }
+  else lab.textContent = 'red dormida';
+}
+
+function refresh() {
+  const u = AXC.state.user, sa = AXC.standalone();
+  document.getElementById('bannerInstall').classList.toggle('show', !!u && !sa);
+  render();
+}
+
+let filter = 'all';
+function render() {
+  axcRenderGames(document.getElementById('grid'), {
+    filter, query: document.getElementById('search').value || '',
+    onPlay: (g) => {
+      if (!AXC.state.user) return AXC_UI.openAuth('login');
+      if (!AXC.standalone()) return AXC_UI.openInstall({ app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' });
+      location.href = 'player.html#' + g.id;
+    }
+  });
+  document.getElementById('countBadge').textContent = window.AXC_GAMES.length + ' juegos';
+}
+document.getElementById('filters').querySelectorAll('.chip').forEach(b => {
+  b.addEventListener('click', () => {
+    document.getElementById('filters').querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    b.classList.add('on'); filter = b.dataset.f; render();
+  });
+});
+document.getElementById('search').addEventListener('input', render);
+render();
+
+/* ¿llegó con ?install=1? → abrir el diálogo de instalación en cuanto esté listo */
+if (new URLSearchParams(location.search).get('install') === '1' && !AXC.standalone()) {
+  setTimeout(() => {
+    if (AXC_UI.installReady()) AXC_UI.nativeInstall();
+    else AXC_UI.openInstall({ app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' });
+  }, 2500);
+}
+refresh();
+net();
+</script>
+</body>
+</html>

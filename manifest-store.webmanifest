@@ -1,0 +1,19 @@
+{
+  "name": "axcStudios Games — Tienda de juegos",
+  "short_name": "axcGames",
+  "description": "La tienda de juegos de axcStudios como app: 20+ juegos gratis, buscador y reproductor integrado.",
+  "id": "axcstudios-store",
+  "start_url": "./store.html?src=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0a",
+  "theme_color": "#1b5fd9",
+  "lang": "es",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "images/store-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "images/store-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "images/store-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

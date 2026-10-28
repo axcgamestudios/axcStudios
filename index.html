@@ -4,433 +4,226 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>axcStudios — Juega sin límites</title>
-<meta name="description" content="axcStudios: estudio independiente de videojuegos web. Explora la Games Store con más de 20 títulos y axcOS, el sistema operativo web.">
+<meta name="description" content="axcStudios: estudio independiente de videojuegos web. 20+ juegos gratis, apps instalables y axcOS, el sistema operativo web. Una cuenta para todo.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="images/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="images/icon-192.png">
 <link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0a0a;
-  --bg-elev:#111114;
-  --bg-card:#16161b;
+  --bg:#0a0a0a;--bg-elev:#111114;--bg-card:#16161b;
   --border:rgba(255,255,255,.08);
-  --text-primary:#f5f6f7;
-  --text-secondary:rgba(245,246,247,.62);
-  --text-tertiary:rgba(245,246,247,.4);
-  --accent:#2e7cf6;
-  --accent-deep:#0b4dc0;
+  --text-primary:#f5f6f7;--text-secondary:rgba(245,246,247,.62);--text-tertiary:rgba(245,246,247,.4);
+  --accent:#2e7cf6;--accent-deep:#1b5fd9;--cyan:#38e8ff;
   --accent-glow:rgba(46,124,246,.35);
-  --font-display:'Space Grotesk',sans-serif;
-  --font-body:'Inter',sans-serif;
-  --ease-out:cubic-bezier(.16,1,.3,1);
-  --ease-io:cubic-bezier(.87,0,.13,1);
+  --font-display:'Space Grotesk',sans-serif;--font-body:'Inter',sans-serif;
+  --ease-out:cubic-bezier(.16,1,.3,1);--ease-io:cubic-bezier(.87,0,.13,1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  background:var(--bg);
-  color:var(--text-primary);
-  font-family:var(--font-body);
-  font-size:16px;
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 ::selection{background:var(--accent);color:#fff}
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
-button{font:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+button{font-family:inherit}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;letter-spacing:-.02em}
+@keyframes axc-in{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
 
-/* ---------- FONDO ANIMADO ---------- */
-#bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.6}
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    linear-gradient(rgba(46,124,246,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(46,124,246,.04) 1px,transparent 1px);
-  background-size:64px 64px;
-  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 100%);
-  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 100%);
-}
+/* ---------- FONDO 3D ÉPICO ---------- */
+.bg-aurora{position:fixed;inset:-20%;z-index:-3;background:
+  radial-gradient(55% 45% at 18% 12%,rgba(46,124,246,.16),transparent 60%),
+  radial-gradient(50% 42% at 82% 8%,rgba(139,92,246,.10),transparent 60%),
+  radial-gradient(60% 50% at 50% 100%,rgba(56,232,255,.07),transparent 60%),
+  #06070d;
+  animation:auroraShift 26s ease-in-out infinite alternate}
+@keyframes auroraShift{from{transform:rotate(-1.5deg) scale(1)}to{transform:rotate(1.5deg) scale(1.12)}}
+#bg3d{position:fixed;inset:0;z-index:-2;width:100vw;height:100vh;pointer-events:none}
+.bg-vignette{position:fixed;inset:0;z-index:-1;pointer-events:none;background:
+  radial-gradient(120% 90% at 50% 0%,transparent 55%,rgba(4,5,10,.72) 100%),
+  linear-gradient(180deg,rgba(6,7,13,.42),transparent 22%,transparent 68%,rgba(6,7,13,.6))}
 
 /* ---------- NAV ---------- */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  display:flex;align-items:center;gap:16px;
-  padding:0 clamp(16px,4vw,48px);
-  height:72px;
-  background:rgba(10,10,10,.72);
-  backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--border);
-  animation:navDrop .8s var(--ease-out) .2s backwards;
-}
-@keyframes navDrop{from{transform:translateY(-100%)}to{transform:translateY(0)}}
-.brand{display:flex;align-items:center;gap:12px;margin-right:8px}
-.brand img{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 12px var(--accent-glow))}
-.brand-name{font-family:var(--font-display);font-weight:700;font-size:1.2rem;letter-spacing:-.02em}
-.brand-name em{font-style:normal;color:var(--accent)}
-.tabs{display:flex;gap:4px;flex:1}
-.tab-btn{
-  position:relative;border:none;background:transparent;color:var(--text-secondary);
-  font-family:var(--font-display);font-weight:600;font-size:.92rem;
-  padding:10px 18px;border-radius:10px;
-  transition:color .3s var(--ease-out),background .3s var(--ease-out);
-  white-space:nowrap;
-}
-.tab-btn:hover{color:var(--text-primary);background:rgba(255,255,255,.06)}
-.tab-btn.active{color:#fff;background:rgba(46,124,246,.16)}
-.tab-btn.active::after{
-  content:'';position:absolute;bottom:-11px;left:18px;right:18px;height:2px;
-  background:var(--accent);border-radius:2px;box-shadow:0 0 12px var(--accent);
-}
-.install-btn-nav{
-  display:flex;align-items:center;gap:8px;
-  background:var(--accent);color:#fff;border:none;
-  font-family:var(--font-display);font-weight:600;font-size:.9rem;
-  padding:10px 18px;border-radius:10px;
-  transition:background .3s var(--ease-out),transform .3s var(--ease-out),box-shadow .3s var(--ease-out);
-  box-shadow:0 4px 20px var(--accent-glow);
-}
-.install-btn-nav:hover{background:#4a90ff;transform:translateY(-1px);box-shadow:0 8px 28px var(--accent-glow)}
-.install-btn-nav.ready{animation:pulse 2.2s infinite}
-.install-btn-nav.done{background:#1f2b22;color:#7ee787;box-shadow:none;cursor:default}
-@keyframes pulse{0%,100%{box-shadow:0 4px 20px var(--accent-glow)}50%{box-shadow:0 4px 34px rgba(46,124,246,.75);transform:translateY(-1px)}}
-.btn-icon{width:16px;height:16px;flex:none}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;gap:18px;
+  padding:14px 28px;background:rgba(8,9,14,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:1.15rem;font-weight:700}
+.brand img{width:32px;height:32px;border-radius:9px;box-shadow:0 0 22px rgba(46,124,246,.45)}
+.brand em{font-style:normal;color:var(--accent)}
+.brand .tag{font-size:.58rem;font-weight:600;letter-spacing:1.6px;color:var(--cyan);border:1px solid rgba(56,232,255,.35);border-radius:6px;padding:2px 6px;text-transform:uppercase;transform:translateY(-6px)}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.045);border:1px solid var(--border);border-radius:13px;padding:4px;margin:0 auto}
+.tab-btn{position:relative;display:flex;align-items:center;gap:7px;padding:9px 18px;border:0;border-radius:10px;background:transparent;
+  color:var(--text-secondary);font-family:var(--font-display);font-weight:600;font-size:.9rem;cursor:pointer;transition:all .3s var(--ease-out)}
+.tab-btn:hover{color:var(--text-primary)}
+.tab-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 4px 20px rgba(46,124,246,.45)}
+.tab-btn .lock{font-size:.68rem;opacity:.75;filter:grayscale(.4)}
+.tab-btn .dot-live{width:7px;height:7px;border-radius:50%;background:#18c964;box-shadow:0 0 9px #18c964;display:none}
+.tab-btn.unlocked .lock{display:none}
+.tab-btn.unlocked .dot-live{display:block}
+.nav-right{display:flex;align-items:center;gap:10px;margin-left:auto}
+.net-pill{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--text-tertiary);font-family:var(--font-display);letter-spacing:.4px}
+.net-pill i{width:8px;height:8px;border-radius:50%;background:#5a6274;transition:.4s}
+.net-pill.on i{background:#18c964;box-shadow:0 0 10px rgba(24,201,100,.9)}
+.net-pill.wait i{background:#f5b942;animation:pulseDot 1.2s infinite}
+@keyframes pulseDot{50%{opacity:.25}}
+.install-btn-nav{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:1px solid rgba(46,124,246,.4);
+  background:rgba(46,124,246,.12);color:#cfe2ff;font-family:var(--font-display);font-weight:600;font-size:.85rem;cursor:pointer;transition:all .3s var(--ease-out)}
+.install-btn-nav:hover{background:rgba(46,124,246,.25);transform:translateY(-1px)}
+.install-btn-nav.ready{border-color:var(--cyan);box-shadow:0 0 24px rgba(56,232,255,.35);color:#dffaff}
+.install-btn-nav svg{width:15px;height:15px}
 
 /* ---------- PAGES ---------- */
-.page{display:none;padding-top:72px;min-height:100vh;position:relative;z-index:1}
-.page.active{display:block;animation:pageIn .7s var(--ease-out)}
-@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.page{display:none;min-height:100vh;padding:108px 28px 80px;max-width:1340px;margin:0 auto}
+.page.active{display:block;animation:pageIn .5s var(--ease-out)}
+@keyframes pageIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 
-/* ---------- HERO (STUDIO) ---------- */
-.hero{
-  position:relative;
-  padding:clamp(64px,10vh,120px) clamp(16px,4vw,48px) clamp(48px,8vh,90px);
-  max-width:1440px;margin:0 auto;
-  display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;
-}
-.hero-copy{position:relative;z-index:1}
-.eyebrow{
-  display:inline-flex;align-items:center;gap:10px;
-  font-family:var(--font-display);font-size:.8rem;font-weight:600;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--accent);
-  margin-bottom:24px;animation:fadeUp .8s var(--ease-out) .35s backwards;
-}
-.eyebrow::before{content:'';width:32px;height:2px;background:var(--accent);border-radius:2px}
-.hero h1{
-  font-family:var(--font-display);
-  font-size:clamp(2.6rem,6.2vw,5.4rem);
-  font-weight:700;line-height:1.02;letter-spacing:-.04em;
-  margin-bottom:28px;text-wrap:balance;
-}
-.hero h1 .w{display:inline-block;animation:fadeUp .9s var(--ease-out) backwards}
-.hero h1 .w:nth-child(1){animation-delay:.45s}
-.hero h1 .w:nth-child(2){animation-delay:.55s}
-.hero h1 .w:nth-child(3){animation-delay:.65s;color:var(--accent)}
-.hero p.lead{
-  font-size:clamp(1rem,1.4vw,1.2rem);line-height:1.7;color:var(--text-secondary);
-  max-width:56ch;margin-bottom:40px;animation:fadeUp .9s var(--ease-out) .8s backwards;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
-.hero-cta{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp .9s var(--ease-out) .95s backwards}
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  font-family:var(--font-display);font-weight:600;font-size:1rem;
-  padding:14px 30px;border-radius:12px;border:none;
-  transition:transform .35s var(--ease-out),background .35s var(--ease-out),box-shadow .35s var(--ease-out);
-}
-.btn-primary{background:var(--accent);color:#fff;box-shadow:0 6px 30px var(--accent-glow)}
-.btn-primary:hover{background:#4a90ff;transform:translateY(-2px);box-shadow:0 12px 40px var(--accent-glow)}
-.btn-ghost{background:transparent;color:var(--text-primary);border:1px solid var(--border)}
-.btn-ghost:hover{background:rgba(255,255,255,.06);transform:translateY(-2px);border-color:rgba(255,255,255,.2)}
-.btn-installa{
-  background:linear-gradient(135deg,var(--accent-deep),var(--accent));
-  color:#fff;box-shadow:0 6px 30px var(--accent-glow);
-}
-.btn-installa:hover{transform:translateY(-2px);box-shadow:0 12px 40px var(--accent-glow);filter:brightness(1.12)}
+/* ---------- HERO ---------- */
+.hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:34px;min-height:calc(88vh - 140px);padding-top:20px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-display);font-size:.72rem;font-weight:600;letter-spacing:2.6px;text-transform:uppercase;color:var(--cyan);
+  border:1px solid rgba(56,232,255,.3);border-radius:999px;padding:8px 16px;background:rgba(56,232,255,.06);margin-bottom:22px}
+.eyebrow::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulseDot 1.6s infinite}
+.hero h1{font-size:clamp(2.9rem,6.4vw,5.4rem);line-height:1.02;letter-spacing:-.035em;margin-bottom:22px}
+.hero h1 .w{display:inline-block}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent) 10%,var(--cyan) 60%,#8b5cf6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{font-size:clamp(1rem,1.4vw,1.18rem);color:var(--text-secondary);max-width:560px;line-height:1.75;margin-bottom:30px}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:15px 28px;border-radius:15px;border:0;cursor:pointer;
+  font-family:var(--font-display);font-weight:700;font-size:.98rem;transition:all .35s var(--ease-out)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 10px 34px rgba(46,124,246,.45)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 44px rgba(46,124,246,.6);filter:brightness(1.07)}
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);color:var(--text-primary)}
+.btn-ghost:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+.hero-badges{display:flex;gap:9px;flex-wrap:wrap}
+.hbadge{font-size:.72rem;font-weight:600;letter-spacing:.6px;color:var(--text-secondary);border:1px solid var(--border);border-radius:999px;padding:6px 13px;background:rgba(255,255,255,.03)}
+.hbadge b{color:var(--cyan)}
+/* arte del hero: logo 3D flotante */
+.hero-art{position:relative;display:grid;place-items:center;min-height:420px;perspective:1100px}
+.hero-orb{position:relative;transform-style:preserve-3d;transition:transform .18s ease-out;animation:floatCard 7s ease-in-out infinite}
+@keyframes floatCard{0%,100%{translate:0 0}50%{translate:0 -16px}}
+.hero-logo{width:min(300px,58vw);aspect-ratio:1;object-fit:contain;border-radius:34px;
+  filter:drop-shadow(0 34px 70px rgba(46,124,246,.5)) drop-shadow(0 0 46px rgba(56,232,255,.22))}
+.hero-ring{position:absolute;width:118%;aspect-ratio:1;border-radius:50%;border:1.5px solid rgba(46,124,246,.3);transform:translateZ(-90px) rotateX(72deg);animation:ringSpin 22s linear infinite}
+.hero-ring::after{content:'';position:absolute;inset:14%;border-radius:50%;border:1px dashed rgba(56,232,255,.22)}
+@keyframes ringSpin{to{transform:translateZ(-90px) rotateX(72deg) rotate(360deg)}}
+.hchip{position:absolute;display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-size:.78rem;font-weight:600;
+  padding:10px 15px;border-radius:13px;background:rgba(13,17,29,.72);border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);box-shadow:0 14px 34px rgba(0,0,0,.45);animation:floatCard 6s ease-in-out infinite}
+.hchip.a{top:6%;left:-4%;animation-delay:-2s}
+.hchip.b{bottom:10%;right:-6%;animation-delay:-4s}
+.hchip.c{top:44%;right:-10%;animation-delay:-1s}
+.hchip i{font-style:normal;font-size:1rem}
 
-/* coverflow de portadas reales */
-.coverflow{
-  position:relative;height:clamp(380px,44vw,560px);
-  perspective:1400px;z-index:1;
-  animation:fadeUp 1.1s var(--ease-out) 1s backwards;
-}
-.cv{
-  position:absolute;top:50%;left:50%;
-  width:clamp(170px,20vw,250px);aspect-ratio:3/4;
-  border-radius:16px;object-fit:cover;
-  box-shadow:0 24px 70px rgba(0,0,0,.65),0 0 0 1px var(--border);
-  transition:transform .7s var(--ease-out),box-shadow .7s var(--ease-out);
-}
-.cv-1{transform:translate(-118%,-50%) rotate(-8deg) scale(.92);z-index:1;filter:saturate(.9)}
-.cv-2{transform:translate(-50%,-54%);z-index:2;box-shadow:0 30px 90px rgba(0,0,0,.7),0 0 70px var(--accent-glow),0 0 0 1px rgba(46,124,246,.3);animation:floaty 6s ease-in-out infinite}
-.cv-3{transform:translate(18%,-50%) rotate(8deg) scale(.92);z-index:1;filter:saturate(.9)}
-@keyframes floaty{0%,100%{transform:translate(-50%,-54%)}50%{transform:translate(-50%,-57%)}}
-.coverflow:hover .cv-1{transform:translate(-121%,-52%) rotate(-10deg) scale(.95)}
-.coverflow:hover .cv-3{transform:translate(21%,-52%) rotate(10deg) scale(.95)}
-.coverflow:hover .cv-2{box-shadow:0 34px 100px rgba(0,0,0,.75),0 0 90px var(--accent-glow),0 0 0 1px rgba(46,124,246,.5)}
+/* ---------- STATS ---------- */
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:26px 0 8px}
+.stat{padding:20px 22px;border-radius:18px;background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid var(--border);transition:all .35s var(--ease-out)}
+.stat:hover{transform:translateY(-4px);border-color:rgba(46,124,246,.4)}
+.stat-num{font-family:var(--font-display);font-size:2rem;font-weight:700}
+.stat-num em{font-style:normal;color:var(--cyan);font-size:1.2rem}
+.stat-label{font-size:.8rem;color:var(--text-tertiary);letter-spacing:.4px;margin-top:2px}
 
-.hero-stats{
-  position:relative;z-index:1;
-  max-width:1440px;margin:0 auto;padding:0 clamp(16px,4vw,48px) clamp(56px,9vh,100px);
-  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
-}
-.stat{
-  background:rgba(17,17,20,.82);backdrop-filter:blur(8px);
-  border:1px solid var(--border);border-radius:16px;
-  padding:28px 24px;animation:fadeUp .8s var(--ease-out) backwards;
-}
-.stat:nth-child(1){animation-delay:1.05s}.stat:nth-child(2){animation-delay:1.15s}
-.stat:nth-child(3){animation-delay:1.25s}.stat:nth-child(4){animation-delay:1.35s}
-.stat-num{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:700;letter-spacing:-.03em;color:#fff}
-.stat-num em{font-style:normal;color:var(--accent)}
-.stat-label{font-size:.85rem;color:var(--text-tertiary);margin-top:4px;letter-spacing:.02em}
+/* ---------- SECCIONES ---------- */
+.section{margin-top:74px}
+.section-head{max-width:660px;margin-bottom:36px}
+.section-kicker{font-family:var(--font-display);font-size:.72rem;font-weight:600;letter-spacing:2.4px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.section-head h2{font-size:clamp(1.7rem,3vw,2.5rem);margin-bottom:12px}
+.section-head .sub{color:var(--text-secondary)}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{padding:26px;border-radius:20px;background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid var(--border);transition:all .4s var(--ease-out)}
+.card:hover{transform:translateY(-6px);border-color:rgba(46,124,246,.45);box-shadow:0 22px 54px rgba(0,0,0,.35)}
+.card-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;
+  background:rgba(46,124,246,.13);border:1px solid rgba(46,124,246,.35)}
+.card-icon svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.card h3{font-size:1.12rem;margin-bottom:9px}
+.card p{font-size:.9rem;color:var(--text-secondary);line-height:1.7}
+.obj-list{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.obj{display:flex;gap:18px;padding:24px;border-radius:20px;background:rgba(255,255,255,.03);border:1px solid var(--border);transition:all .35s var(--ease-out)}
+.obj:hover{border-color:rgba(56,232,255,.35)}
+.obj-num{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:transparent;-webkit-text-stroke:1.3px rgba(56,232,255,.6)}
+.obj h4{font-size:1.05rem;margin-bottom:7px}
+.obj p{font-size:.88rem;color:var(--text-secondary);line-height:1.65}
 
-/* ---------- SECTIONS ---------- */
-.section{max-width:1440px;margin:0 auto;padding:clamp(48px,8vh,90px) clamp(16px,4vw,48px)}
-.section-head{margin-bottom:48px;max-width:720px}
-.section-kicker{
-  font-family:var(--font-display);font-size:.78rem;font-weight:600;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;
-}
-.section h2{
-  font-family:var(--font-display);
-  font-size:clamp(1.9rem,3.6vw,3rem);font-weight:700;
-  letter-spacing:-.03em;line-height:1.08;margin-bottom:16px;text-wrap:balance;
-}
-.section p.sub{color:var(--text-secondary);font-size:1.05rem;line-height:1.7}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.card{
-  background:rgba(17,17,20,.82);backdrop-filter:blur(8px);
-  border:1px solid var(--border);border-radius:18px;
-  padding:32px;position:relative;overflow:hidden;
-  transition:transform .5s var(--ease-out),border-color .5s var(--ease-out),box-shadow .5s var(--ease-out);
-}
-.card:hover{transform:translateY(-6px);border-color:rgba(46,124,246,.4);box-shadow:0 20px 60px rgba(0,0,0,.45)}
-.card-icon{
-  width:52px;height:52px;border-radius:14px;display:grid;place-items:center;
-  background:rgba(46,124,246,.12);border:1px solid rgba(46,124,246,.25);
-  margin-bottom:22px;
-}
-.card-icon svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.card h3{font-family:var(--font-display);font-size:1.25rem;font-weight:600;letter-spacing:-.01em;margin-bottom:12px}
-.card p{color:var(--text-secondary);font-size:.95rem;line-height:1.65}
+/* ---------- APPS TRÍO ---------- */
+.apps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.app-card{position:relative;padding:26px;border-radius:22px;overflow:hidden;
+  background:linear-gradient(165deg,rgba(46,124,246,.09),rgba(255,255,255,.02) 55%);border:1px solid rgba(46,124,246,.25);transition:all .4s var(--ease-out)}
+.app-card:hover{transform:translateY(-6px);box-shadow:0 26px 60px rgba(46,124,246,.18)}
+.app-card img{width:64px;height:64px;border-radius:17px;box-shadow:0 12px 32px rgba(0,0,0,.5);margin-bottom:16px}
+.app-card h3{font-size:1.2rem;margin-bottom:6px}
+.app-card p{font-size:.87rem;color:var(--text-secondary);line-height:1.65;margin-bottom:18px}
+.app-card .btn{padding:12px 20px;font-size:.88rem;width:100%;justify-content:center}
+.app-pill{position:absolute;top:18px;right:18px;font-size:.64rem;font-weight:700;letter-spacing:1.4px;color:#00131f;
+  background:linear-gradient(135deg,var(--cyan),var(--accent));border-radius:8px;padding:4px 9px;text-transform:uppercase}
 
-.obj-list{display:grid;gap:16px;max-width:860px}
-.obj{
-  display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
-  background:rgba(17,17,20,.82);backdrop-filter:blur(8px);
-  border:1px solid var(--border);border-radius:16px;padding:24px 28px;
-  transition:border-color .4s var(--ease-out),transform .4s var(--ease-out);
-}
-.obj:hover{border-color:rgba(46,124,246,.4);transform:translateX(6px)}
-.obj-num{font-family:var(--font-display);font-weight:700;font-size:1.4rem;color:var(--accent);letter-spacing:-.02em;line-height:1.3}
-.obj h4{font-family:var(--font-display);font-size:1.05rem;font-weight:600;margin-bottom:6px}
-.obj p{color:var(--text-secondary);font-size:.93rem;line-height:1.6}
-
-/* ---------- STORE HERO (estilo Epic) ---------- */
-.store-hero{max-width:1440px;margin:0 auto;padding:clamp(36px,6vh,64px) clamp(16px,4vw,48px) 20px}
-.sh-card{
-  position:relative;border-radius:24px;overflow:hidden;
-  border:1px solid rgba(46,124,246,.22);
-  background:linear-gradient(120deg,#0d1420 0%,#0a0f18 55%,#0c0d16 100%);
-  box-shadow:0 30px 90px rgba(0,0,0,.5),0 0 60px rgba(46,124,246,.08);
-  display:grid;grid-template-columns:1.15fr .85fr;min-height:clamp(340px,46vh,460px);
-}
-.sh-info{padding:clamp(28px,5vw,56px);display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
-.feature-tag{
-  display:inline-flex;align-items:center;gap:8px;width:fit-content;
-  font-family:var(--font-display);font-size:.72rem;font-weight:700;letter-spacing:.18em;
-  text-transform:uppercase;color:#fff;background:linear-gradient(135deg,#f5a623,#ed8b0f);
-  padding:6px 12px;border-radius:8px;margin-bottom:20px;color:#1a1205;
-}
-.feature-tag svg{width:14px;height:14px;fill:#1a1205}
-.feature-title{
-  font-family:var(--font-display);font-size:clamp(1.9rem,4vw,3.4rem);
-  font-weight:700;letter-spacing:-.03em;line-height:1.05;margin-bottom:16px;text-wrap:balance;
-}
-.feature-desc{color:rgba(245,246,247,.8);font-size:1rem;line-height:1.7;margin-bottom:28px;max-width:52ch}
-.feature-btns{display:flex;gap:14px;flex-wrap:wrap}
-.sh-art{position:relative;overflow:hidden}
-.sh-art img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;
-  filter:saturate(1.08);
-}
-.sh-art::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,#0d1420 0%,transparent 45%);
-}
-.sh-art::before{
-  content:'';position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 75% 30%,rgba(46,124,246,.18),transparent 60%);
-}
-
-/* banner de instalación */
-.install-banner{
-  max-width:1440px;margin:22px auto 6px;
-  padding:0 clamp(16px,4vw,48px);
-}
-.install-banner-inner{
-  display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
-  background:rgba(17,17,20,.82);backdrop-filter:blur(8px);
-  border:1px solid rgba(46,124,246,.3);border-radius:18px;padding:20px 26px;
-  box-shadow:0 10px 40px rgba(0,0,0,.3),0 0 40px rgba(46,124,246,.07);
-}
-.ib-text strong{font-family:var(--font-display);font-size:1.02rem;display:block;margin-bottom:2px}
-.ib-text span{font-size:.85rem;color:var(--text-secondary)}
-
-/* filtros */
-.filter-bar{
-  max-width:1440px;margin:28px auto 8px;padding:0 clamp(16px,4vw,48px);
-  display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-}
-.filter-chip{
-  border:1px solid var(--border);background:rgba(17,17,20,.82);color:var(--text-secondary);
-  font-family:var(--font-display);font-weight:600;font-size:.85rem;
-  padding:9px 18px;border-radius:100px;
-  transition:all .3s var(--ease-out);
-}
-.filter-chip:hover{color:var(--text-primary);border-color:rgba(255,255,255,.25)}
-.filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 18px var(--accent-glow)}
-
-/* grid de juegos — tarjetas verticales estilo Epic */
-.games-grid{
-  max-width:1440px;margin:0 auto;padding:24px clamp(16px,4vw,48px) clamp(64px,9vh,110px);
-  display:grid;grid-template-columns:repeat(4,1fr);gap:22px;
-}
-.game-card{
-  background:rgba(22,22,27,.9);backdrop-filter:blur(8px);
-  border:1px solid var(--border);border-radius:18px;
-  overflow:hidden;position:relative;display:flex;flex-direction:column;
-  transition:transform .5s var(--ease-out),border-color .4s var(--ease-out),box-shadow .5s var(--ease-out);
-}
-.game-card:hover{transform:translateY(-8px);border-color:rgba(46,124,246,.5);box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 40px rgba(46,124,246,.08)}
+/* ---------- STORE ---------- */
+.store-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.store-head h2{font-size:clamp(1.8rem,3vw,2.6rem)}
+.store-head .sub{color:var(--text-secondary);margin-top:6px}
+.store-tools{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:26px}
+.search{flex:1;min-width:220px;position:relative}
+.search input{width:100%;padding:13px 16px 13px 44px;border-radius:14px;border:1px solid var(--border);
+  background:rgba(255,255,255,.045);color:var(--text-primary);outline:none;font-size:.95rem;transition:.3s}
+.search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(46,124,246,.16)}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:var(--text-tertiary);fill:none;stroke-width:2}
+.filter-chips{display:flex;gap:8px;flex-wrap:wrap}
+.filter-chip{padding:10px 17px;border-radius:11px;border:1px solid var(--border);background:rgba(255,255,255,.04);
+  color:var(--text-secondary);font-family:var(--font-display);font-weight:600;font-size:.82rem;cursor:pointer;transition:.3s var(--ease-out)}
+.filter-chip:hover{color:#fff;border-color:rgba(46,124,246,.5)}
+.filter-chip.on{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(46,124,246,.4)}
+.games-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.game-card{border-radius:20px;overflow:hidden;background:var(--bg-card);border:1px solid var(--border);
+  transition:all .45s var(--ease-out);display:flex;flex-direction:column}
+.game-card:hover{transform:translateY(-8px);border-color:rgba(46,124,246,.5);box-shadow:0 26px 60px rgba(0,0,0,.5),0 0 0 1px rgba(46,124,246,.2)}
 .game-cover{position:relative;aspect-ratio:3/4;overflow:hidden}
-.game-cover img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease-out)}
-.game-card:hover .game-cover img{transform:scale(1.05)}
-.game-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 62%,rgba(10,10,10,.5))}
-.badge{
-  position:absolute;top:12px;left:12px;z-index:2;
-  font-family:var(--font-display);font-size:.68rem;font-weight:700;letter-spacing:.12em;
-  text-transform:uppercase;color:#1a1205;
-  background:linear-gradient(135deg,#f5a623,#ed8b0f);
-  padding:5px 11px;border-radius:7px;display:inline-flex;align-items:center;gap:5px;
-}
-.badge svg{width:12px;height:12px;fill:#1a1205}
-.game-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1}
-.game-genre{font-size:.72rem;color:var(--accent);font-weight:600;letter-spacing:.08em;text-transform:uppercase}
-.game-title{font-family:var(--font-display);font-size:1.08rem;font-weight:700;letter-spacing:-.01em}
-.game-desc{
-  color:var(--text-secondary);font-size:.86rem;line-height:1.55;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-}
-.game-actions{display:flex;gap:10px;margin-top:8px;align-items:center}
-.btn-play{
-  flex:1;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  background:var(--accent);color:#fff;border:none;border-radius:10px;
-  font-family:var(--font-display);font-weight:600;font-size:.88rem;padding:11px 16px;
-  transition:background .3s var(--ease-out),transform .3s var(--ease-out),box-shadow .3s var(--ease-out);
-  box-shadow:0 4px 18px var(--accent-glow);
-}
-.btn-play:hover{background:#4a90ff;transform:translateY(-2px);box-shadow:0 10px 30px var(--accent-glow)}
+.game-cover img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease-out)}
+.game-card:hover .game-cover img{transform:scale(1.07)}
+.game-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(10,10,15,.9))}
+.badge{position:absolute;top:12px;left:12px;z-index:2;display:flex;align-items:center;gap:5px;font-size:.66rem;font-weight:700;letter-spacing:.8px;
+  color:#01131f;background:linear-gradient(135deg,var(--cyan),var(--accent));border-radius:8px;padding:5px 9px}
+.badge svg{width:11px;height:11px;fill:#01131f}
+.game-body{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
+.game-genre{font-size:.68rem;font-weight:600;letter-spacing:1.1px;text-transform:uppercase;color:var(--cyan);margin-bottom:6px}
+.game-title{font-family:var(--font-display);font-size:1.08rem;font-weight:700;letter-spacing:-.01em;margin-bottom:7px}
+.game-desc{font-size:.83rem;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;flex:1}
+.game-actions{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn-play{display:flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;font-family:var(--font-display);font-weight:700;font-size:.86rem;transition:.3s var(--ease-out)}
+.btn-play:hover{box-shadow:0 8px 26px rgba(46,124,246,.55);transform:translateY(-1px);filter:brightness(1.1)}
 .btn-play svg{width:12px;height:12px;fill:#fff}
-.free-tag{font-family:var(--font-display);font-size:.82rem;font-weight:700;color:#7ee787;white-space:nowrap}
+.free-tag{font-size:.66rem;font-weight:700;letter-spacing:1.2px;color:#18c964;border:1px solid rgba(24,201,100,.4);border-radius:7px;padding:4px 8px}
+.store-empty{grid-column:1/-1;text-align:center;color:var(--text-tertiary);padding:60px 0;font-size:1rem}
 
-/* ---------- axcOS ---------- */
-.os-hero{
-  position:relative;max-width:1440px;margin:0 auto;
-  padding:clamp(56px,9vh,110px) clamp(16px,4vw,48px) 32px;
-  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
-}
-.os-copy h1{
-  font-family:var(--font-display);
-  font-size:clamp(2.6rem,5.5vw,4.6rem);font-weight:700;
-  letter-spacing:-.04em;line-height:1.03;margin-bottom:22px;text-wrap:balance;
-}
-.os-copy h1 span{color:var(--accent)}
-.os-copy p{color:var(--text-secondary);font-size:1.05rem;line-height:1.7;max-width:54ch;margin-bottom:34px}
-.os-art img{
-  width:100%;border-radius:20px;
-  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 60px var(--accent-glow),0 0 0 1px var(--border);
-}
-.os-features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1440px;margin:0 auto;padding:16px clamp(16px,4vw,48px) clamp(64px,9vh,110px)}
-.os-feature{
-  background:rgba(17,17,20,.82);backdrop-filter:blur(8px);
-  border:1px solid var(--border);border-radius:16px;padding:26px;
-  transition:border-color .4s var(--ease-out),transform .4s var(--ease-out);
-}
-.os-feature:hover{border-color:rgba(46,124,246,.4);transform:translateY(-4px)}
-.os-feature h4{font-family:var(--font-display);font-size:1rem;font-weight:600;margin-bottom:8px}
-.os-feature p{font-size:.88rem;color:var(--text-secondary);line-height:1.6}
+/* ---------- GATES (candado de sesión / instalación) ---------- */
+.gate{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px;
+  min-height:62vh;border-radius:24px;border:1px dashed rgba(46,124,246,.35);
+  background:radial-gradient(60% 55% at 50% 35%,rgba(46,124,246,.09),rgba(255,255,255,.015));padding:40px}
+.gate.show{display:flex;animation:pageIn .5s var(--ease-out)}
+.gate-icon{font-size:3rem;line-height:1;filter:drop-shadow(0 8px 30px rgba(46,124,246,.5));animation:floatCard 4s ease-in-out infinite}
+.gate h3{font-size:clamp(1.3rem,2.4vw,1.9rem)}
+.gate p{color:var(--text-secondary);max-width:480px;line-height:1.7}
+.gate-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.locked-wrap{opacity:.14;filter:blur(3px) saturate(.4);pointer-events:none;user-select:none}
+/* axcOS embed */
+.axcos-embed{border-radius:22px;overflow:hidden;border:1px solid rgba(46,124,246,.3);box-shadow:0 30px 80px rgba(0,0,0,.5);background:#05060a}
+.axcos-embed-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:rgba(13,17,29,.85);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.axcos-embed-bar b{font-family:var(--font-display);font-size:.95rem}
+.axcos-embed-bar .acts{display:flex;gap:8px;flex-wrap:wrap}
+.axcos-embed iframe{width:100%;height:min(72vh,760px);border:0;display:block;background:#05060a}
 
 /* ---------- FOOTER ---------- */
-footer{
-  position:relative;z-index:1;
-  border-top:1px solid var(--border);
-  padding:48px clamp(16px,4vw,48px);
-  max-width:1440px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
-}
-footer .brand img{width:30px;height:30px}
-footer p{color:var(--text-tertiary);font-size:.85rem}
-footer nav{display:flex;gap:22px}
-footer nav a{color:var(--text-secondary);font-size:.88rem;transition:color .3s}
+footer{border-top:1px solid var(--border);padding:34px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1340px;margin:0 auto}
+footer .brand{font-size:1rem}
+footer .brand img{width:28px;height:28px}
+footer p{color:var(--text-tertiary);font-size:.84rem}
+footer nav{display:flex;gap:20px}
+footer nav a{color:var(--text-secondary);font-size:.87rem;transition:color .3s;cursor:pointer}
 footer nav a:hover{color:var(--accent)}
-
-/* ---------- MODAL ---------- */
-.modal-overlay{
-  position:fixed;inset:0;z-index:200;
-  background:rgba(5,5,8,.7);backdrop-filter:blur(10px);
-  display:none;align-items:center;justify-content:center;padding:20px;
-}
-.modal-overlay.open{display:flex;animation:overlayIn .4s var(--ease-out)}
-@keyframes overlayIn{from{opacity:0}to{opacity:1}}
-.modal{
-  background:var(--bg-elev);border:1px solid rgba(46,124,246,.3);border-radius:22px;
-  max-width:480px;width:100%;padding:36px;position:relative;
-  box-shadow:0 40px 120px rgba(0,0,0,.7),0 0 80px rgba(46,124,246,.12);
-  animation:modalIn .55s var(--ease-out);
-  max-height:90vh;overflow-y:auto;
-}
-@keyframes modalIn{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:none}}
-.modal-close{
-  position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:10px;
-  background:rgba(255,255,255,.06);border:none;color:var(--text-secondary);
-  font-size:1.1rem;display:grid;place-items:center;transition:all .3s;z-index:2;
-}
-.modal-close:hover{background:rgba(255,255,255,.12);color:#fff}
-.modal-cover{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;margin-bottom:22px;border:1px solid var(--border)}
-.modal h3{font-family:var(--font-display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
-.modal .modal-sub{color:var(--text-secondary);font-size:.92rem;line-height:1.6;margin-bottom:24px}
-.os-steps{display:grid;gap:14px;margin-bottom:26px}
-.os-step{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start}
-.os-step-num{
-  width:26px;height:26px;border-radius:50%;flex:none;display:grid;place-items:center;
-  background:rgba(46,124,246,.15);border:1px solid rgba(46,124,246,.4);
-  color:var(--accent);font-family:var(--font-display);font-weight:700;font-size:.8rem;margin-top:2px;
-}
-.os-step p{font-size:.88rem;color:var(--text-secondary);line-height:1.55}
-.os-step p strong{color:var(--text-primary)}
-.btn-full{width:100%}
-
-/* ---------- TOAST ---------- */
-.toast{
-  position:fixed;bottom:26px;left:50%;z-index:300;
-  transform:translateX(-50%) translateY(90px);
-  background:rgba(22,22,27,.95);border:1px solid rgba(46,124,246,.45);
-  padding:14px 24px;border-radius:14px;
-  font-family:var(--font-display);font-weight:600;font-size:.9rem;
-  box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(46,124,246,.15);
-  transition:transform .6s var(--ease-out);pointer-events:none;
-  max-width:90vw;text-align:center;
-}
-.toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ---------- REVEAL ---------- */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease-out),transform .8s var(--ease-out)}
@@ -438,81 +231,125 @@ footer nav a:hover{color:var(--accent)}
 
 /* ---------- RESPONSIVE ---------- */
 @media(max-width:1200px){.games-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:1080px){
-  .hero{grid-template-columns:1fr;gap:40px}
-  .coverflow{height:clamp(340px,58vw,480px);order:-1}
-  .os-hero{grid-template-columns:1fr}
-}
+@media(max-width:1080px){.hero{grid-template-columns:1fr;gap:44px}.hero-art{min-height:360px;order:-1}}
 @media(max-width:860px){
   .games-grid{grid-template-columns:repeat(2,1fr)}
   .grid-3{grid-template-columns:1fr;max-width:640px}
-  .os-features{grid-template-columns:1fr;max-width:640px}
+  .apps-grid{grid-template-columns:1fr;max-width:560px}
+  .obj-list{grid-template-columns:1fr}
   .hero-stats{grid-template-columns:repeat(2,1fr)}
-  .sh-card{grid-template-columns:1fr}
-  .sh-art{min-height:240px;order:-1}
-  .sh-art::after{background:linear-gradient(0deg,#0d1420 0%,transparent 60%)}
-}
-@media(max-width:680px){
-  .nav{gap:8px;padding:0 16px}
-  .brand-name{display:none}
-  .tab-btn{padding:10px 10px;font-size:.8rem}
-  .install-btn-nav span{display:none}
-  .install-btn-nav{padding:10px 12px}
+  .nav{gap:10px;padding:12px 16px}
+  .brand .tag{display:none}
+  .tab-btn{padding:9px 12px;font-size:.78rem}
+  .net-pill{display:none}
 }
 @media(max-width:540px){
-  .games-grid{grid-template-columns:repeat(2,1fr);gap:14px}
-  .game-body{padding:14px 14px 16px}
-  .game-title{font-size:.95rem}
+  .page{padding:96px 16px 60px}
+  .games-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .game-body{padding:12px 12px 14px}
+  .game-title{font-size:.92rem}
   .game-desc{display:none}
-  .btn-play{font-size:.8rem;padding:10px 10px}
+  .btn-play{font-size:.78rem;padding:9px 14px}
+  .install-btn-nav span{display:none}
+  .install-btn-nav{padding:10px 12px}
+  .hero-orb{transform:scale(.88)}
+  .hchip.c{display:none}
 }
 </style>
 </head>
 <body>
-
-<canvas id="bg" aria-hidden="true"></canvas>
+<!-- ================= FONDO 3D ================= -->
+<div class="bg-aurora" aria-hidden="true"></div>
+<canvas id="bg3d" aria-hidden="true"></canvas>
+<div class="bg-vignette" aria-hidden="true"></div>
 
 <!-- ================= NAV ================= -->
 <header class="nav">
-  <a class="brand" href="#" onclick="goTab('studio');return false">
+  <a class="brand" href="#" id="brandHome">
     <img src="images/logo.png" alt="axcStudios logo">
     <span class="brand-name">axc<em>Studios</em></span>
+    <span class="tag">web studio</span>
   </a>
   <nav class="tabs" role="tablist" aria-label="Secciones">
-    <button class="tab-btn active" role="tab" aria-selected="true" onclick="goTab('studio')">Studio</button>
-    <button class="tab-btn" role="tab" aria-selected="false" onclick="goTab('store')">Games Store</button>
-    <button class="tab-btn" role="tab" aria-selected="false" onclick="goTab('axcos')">axcOS</button>
+    <button class="tab-btn active" role="tab" aria-selected="true" data-tab="studio">Studio</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="store"><span class="lock">🔒</span>Games Store<span class="dot-live"></span></button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="axcos"><span class="lock">🔒</span>axcOS<span class="dot-live"></span></button>
   </nav>
-  <button class="install-btn-nav" id="navInstall" onclick="installApp()">
-    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    <span id="navInstallLabel">Instalar app</span>
-  </button>
+  <div class="nav-right">
+    <span class="net-pill" id="netPill"><i></i><span id="netLabel">red axc…</span></span>
+    <button class="install-btn-nav" id="navInstall" data-axc-install-ready title="Instalar axcStudios como app">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span>Instalar app</span>
+    </button>
+    <div id="accountChip"></div>
+  </div>
 </header>
 
 <!-- ================= PÁGINA 1: STUDIO ================= -->
 <main id="page-studio" class="page active" role="tabpanel">
   <section class="hero">
     <div class="hero-copy">
-      <span class="eyebrow">Estudio independiente de videojuegos</span>
-      <h1><span class="w">Juega</span> <span class="w">sin</span> <span class="w">límites.</span></h1>
-      <p class="lead">En axcStudios creamos mundos que corren directo en tu navegador: sin descargas pesadas, sin esperas. Más de 20 juegos gratuitos, un ecosistema propio y axcOS, nuestro sistema operativo web. Todo a un clic.</p>
+      <span class="eyebrow">Estudio independiente · web gaming</span>
+      <h1><span class="w">Juega.</span> <span class="w">Instala.</span><br><em>Vive el universo axc.</em></h1>
+      <p class="lead">En axcStudios creamos mundos que corren directo en tu navegador: 20+ juegos gratis, apps instalables de verdad y axcOS, nuestro sistema operativo web. Crea tu cuenta una vez y úsala en todas las páginas axc.</p>
       <div class="hero-cta">
-        <button class="btn btn-primary" onclick="goTab('store')">Explorar la tienda</button>
-        <button class="btn btn-ghost" onclick="goTab('axcos')">Conocer axcOS</button>
+        <button class="btn btn-primary" id="heroStore">Explorar la tienda →</button>
+        <button class="btn btn-ghost" id="heroApps">⤓ Instalar las apps</button>
+      </div>
+      <div class="hero-badges">
+        <span class="hbadge">⚡ PWA nativa</span>
+        <span class="hbadge">👤 Una cuenta, <b>todas las webs</b></span>
+        <span class="hbadge">🖥 axcOS integrado</span>
       </div>
     </div>
-    <div class="coverflow" aria-label="Portadas destacadas">
-      <img class="cv cv-1" src="images/games/rocket-league.png" alt="Portada de Rocket League">
-      <img class="cv cv-2" src="images/games/kingdom-forgotten-seas.png" alt="Portada de Kingdom of the Forgotten Seas">
-      <img class="cv cv-3" src="images/games/fnaf-1.png" alt="Portada de Five Nights at Freddy's">
+    <div class="hero-art" id="heroArt">
+      <div class="hero-orb" id="heroOrb">
+        <div class="hero-ring"></div>
+        <img class="hero-logo" src="images/logo.png" alt="Emblema 3D de axcStudios">
+      </div>
+      <div class="hchip a"><i>🎮</i> 20+ juegos</div>
+      <div class="hchip b"><i>📦</i> 3 apps del mismo estudio</div>
+      <div class="hchip c"><i>🔐</i> Cifrado PBKDF2</div>
     </div>
   </section>
 
   <section class="hero-stats">
-    <div class="stat"><div class="stat-num">20<em>+</em></div><div class="stat-label">Juegos publicados</div></div>
-    <div class="stat"><div class="stat-num"><em>100%</em></div><div class="stat-label">Gratis para jugar</div></div>
-    <div class="stat"><div class="stat-num">9<em>+</em></div><div class="stat-label">Géneros distintos</div></div>
-    <div class="stat"><div class="stat-num">0<em>s</em></div><div class="stat-label">Descargas requeridas</div></div>
+    <div class="stat reveal"><div class="stat-num">20<em>+</em></div><div class="stat-label">Juegos publicados</div></div>
+    <div class="stat reveal"><div class="stat-num"><em>100%</em></div><div class="stat-label">Gratis para jugar</div></div>
+    <div class="stat reveal"><div class="stat-num">3</div><div class="stat-label">Apps instalables</div></div>
+    <div class="stat reveal"><div class="stat-num">1</div><div class="stat-label">Cuenta para todo</div></div>
+  </section>
+
+  <!-- APPS TRÍO: mismo repo, links propios (como los FNAF) -->
+  <section class="section">
+    <div class="section-head reveal">
+      <div class="section-kicker">Apps instalables</div>
+      <h2>Tres apps, un mismo estudio</h2>
+      <p class="sub">Como los FNAF: viven en el mismo sitio, pero cada una tiene su propio link e icono y se instala por separado como aplicación real.</p>
+    </div>
+    <div class="apps-grid">
+      <article class="app-card reveal">
+        <span class="app-pill">Esta página</span>
+        <img src="images/icon-512.png" alt="Icono de axcStudios">
+        <h3>axcStudios</h3>
+        <p>El estudio completo: información, tienda y acceso a axcOS desde una sola app.</p>
+        <button class="btn btn-primary" id="installMain">⤓ Instalar el estudio</button>
+      </article>
+      <article class="app-card reveal">
+        <span class="app-pill">app propia</span>
+        <img src="images/store-icon-512.png" alt="Icono de axcStudios Games">
+        <h3>axcStudios Games</h3>
+        <p>La tienda como app independiente: buscador, filtros y reproductor de juegos integrado.</p>
+        <a class="btn btn-primary" href="store.html?install=1" target="_blank" rel="noopener">⤓ Instalar la tienda</a>
+      </article>
+      <article class="app-card reveal">
+        <span class="app-pill">app propia</span>
+        <img src="images/axcos-icon-512.png" alt="Icono de axcOS">
+        <h3>axcOS</h3>
+        <p>El sistema operativo web de axcStudios: escritorio, ventanas y apps, a pantalla completa.</p>
+        <a class="btn btn-primary" href="axcos.html?install=1" target="_blank" rel="noopener">⤓ Instalar axcOS</a>
+      </article>
+    </div>
   </section>
 
   <section class="section">
@@ -540,12 +377,12 @@ footer nav a:hover{color:var(--accent)}
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <h3>Cero fricción</h3>
-        <p>Sin instaladores de 80 GB ni registros obligatorios. Abres el enlace y ya estás jugando. Si quieres el estudio en tu escritorio, un solo botón instala la web como aplicación.</p>
+        <p>Sin instaladores de 80 GB. Abres el enlace y ya estás jugando; y si quieres el estudio en tu escritorio, un solo botón instala la web como aplicación de verdad.</p>
       </article>
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg></div>
         <h3>Multiplataforma</h3>
-        <p>PC, móvil, tablet o Chromebook: nuestros juegos se ejecutan donde haya un navegador. Tu partida te sigue a cualquier pantalla, sin perder nada por el camino.</p>
+        <p>PC, móvil, tablet o Chromebook: nuestros juegos se ejecutan donde haya un navegador. Tu cuenta y tu partida te siguen a cualquier pantalla.</p>
       </article>
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg></div>
@@ -562,23 +399,19 @@ footer nav a:hover{color:var(--accent)}
       <p class="sub">Cuatro metas claras que guían cada juego, cada línea de código y cada decisión del estudio.</p>
     </div>
     <div class="obj-list">
-      <div class="obj reveal">
-        <div class="obj-num">01</div>
+      <div class="obj reveal"><div class="obj-num">01</div>
         <div><h4>Hacer el juego accesible para todos</h4>
         <p>Derribar las barreras del gaming tradicional: nada de hardware caro, nada de descargas eternas. Si tienes un navegador, tienes una consola completa de axcStudios.</p></div>
       </div>
-      <div class="obj reveal">
-        <div class="obj-num">02</div>
+      <div class="obj reveal"><div class="obj-num">02</div>
         <div><h4>Crear sagas propias con identidad</h4>
         <p>No vivimos de copiar: Kingdom of the Forgotten Seas, Zona Cero o Grand Theft Voxel nacen aquí, con sus propias reglas, estética y universos que crecen entrega tras entrega.</p></div>
       </div>
-      <div class="obj reveal">
-        <div class="obj-num">03</div>
+      <div class="obj reveal"><div class="obj-num">03</div>
         <div><h4>Construir la plataforma del futuro</h4>
         <p>axcOS es la prueba de que la web puede ser mucho más que páginas. Un sistema operativo completo, instalable y en constante expansión, desarrollado por y para jugadores.</p></div>
       </div>
-      <div class="obj reveal">
-        <div class="obj-num">04</div>
+      <div class="obj reveal"><div class="obj-num">04</div>
         <div><h4>Sostener un ecosistema gratuito</h4>
         <p>Veinte juegos gratis hoy, más mañana. Nuestro modelo se sostiene sobre la comunidad y la pasión por crear, no sobre el bolsillo de quien solo quiere jugar.</p></div>
       </div>
@@ -586,367 +419,228 @@ footer nav a:hover{color:var(--accent)}
   </section>
 </main>
 
-<!-- ================= PÁGINA 2: GAMES STORE ================= -->
+<!-- ================= PÁGINA 2: GAMES STORE (con sesión) ================= -->
 <main id="page-store" class="page" role="tabpanel">
-  <section class="store-hero">
-    <div class="sh-card">
-      <div class="sh-info">
-        <span class="feature-tag"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg> Juego insignia</span>
-        <h2 class="feature-title">Kingdom of the Forgotten Seas</h2>
-        <p class="feature-desc">Zarpa hacia un archipiélago medieval de tesoros hundidos y batallas navales. Recluta tripulación, asalta castillos y haz tuyo el mar olvidado.</p>
-        <div class="feature-btns">
-          <a class="btn btn-primary" href="https://axcgamestudios.github.io/KFS/" target="_blank" rel="noopener">Jugar ahora</a>
-        </div>
-      </div>
-      <div class="sh-art">
-        <img src="images/games/kingdom-forgotten-seas.png" alt="Kingdom of the Forgotten Seas">
-      </div>
+  <div class="store-head">
+    <div>
+      <div class="section-kicker">Games Store</div>
+      <h2>La tienda axcStudios</h2>
+      <p class="sub">Inicia sesión para ver el catálogo. Para <strong>jugar</strong>, instala la tienda como app: los juegos corren dentro de la app instalada.</p>
     </div>
-  </section>
-
-  <div class="install-banner">
-    <div class="install-banner-inner">
-      <div class="ib-text">
-        <strong>Lleva la Games Store en tu escritorio</strong>
-        <span>Instálala como aplicación real: se abrirá a pantalla completa, sin barra del navegador, con todos los juegos a un clic.</span>
-      </div>
-      <button class="btn btn-installa" onclick="installApp()">
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Instalar como app
-      </button>
+    <div class="hero-badges">
+      <span class="hbadge" id="storeCount">20 juegos</span>
+      <span class="hbadge">🔒 Sesión requerida</span>
+      <span class="hbadge">📦 App requerida para jugar</span>
     </div>
   </div>
 
-  <div class="filter-bar" id="filterBar">
-    <button class="filter-chip on" data-filter="all" onclick="setFilter('all',this)">Todos</button>
-    <button class="filter-chip" data-filter="arcade" onclick="setFilter('arcade',this)">Arcade Legends</button>
-    <button class="filter-chip" data-filter="fnaf" onclick="setFilter('fnaf',this)">Saga FNAF</button>
-    <button class="filter-chip" data-filter="axc" onclick="setFilter('axc',this)">Originales axcStudios</button>
+  <div class="gate" id="storeGate">
+    <div class="gate-icon">🔐</div>
+    <h3>Los juegos son para miembros</h3>
+    <p>Crea tu cuenta axc (usuario, correo y contraseña) o inicia sesión para desbloquear el catálogo completo. Tu cuenta sirve en <strong>todas las páginas de axcStudios</strong>.</p>
+    <div class="gate-actions">
+      <button class="btn btn-primary" id="gateSignup">✨ Crear mi cuenta</button>
+      <button class="btn btn-ghost" id="gateLogin">Ya tengo cuenta</button>
+    </div>
   </div>
 
-  <div class="games-grid" id="gamesGrid"></div>
+  <div id="storeWrap">
+    <div class="store-tools">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="storeSearch" type="search" placeholder="Buscar juegos…" autocomplete="off">
+      </div>
+      <div class="filter-chips" id="storeFilters">
+        <button class="filter-chip on" data-f="all">Todos</button>
+        <button class="filter-chip" data-f="arcade">Arcade</button>
+        <button class="filter-chip" data-f="fnaf">FNAF</button>
+        <button class="filter-chip" data-f="axc">axc Originals</button>
+      </div>
+    </div>
+    <div class="games-grid" id="gamesGrid"></div>
+  </div>
 </main>
 
-<!-- ================= PÁGINA 3: axcOS ================= -->
+<!-- ================= PÁGINA 3: AXCOS (sesión + app) ================= -->
 <main id="page-axcos" class="page" role="tabpanel">
-  <section class="os-hero">
-    <div class="os-copy">
-      <span class="eyebrow">El sistema operativo web de axcStudios</span>
-      <h1>axc<span>OS</span>. Tu escritorio, en la web.</h1>
-      <p>No es una página: es un sistema operativo completo que vive en tu navegador. Ventanas, apps, tu sesión y todos los juegos del estudio, integrados en un solo entorno. Instálalo como aplicación y axcOS arrancará como cualquier programa de tu equipo.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="https://axcgamestudios.github.io/eosaxroom/" target="_blank" rel="noopener">Abrir axcOS</a>
-        <button class="btn btn-installa" onclick="openAxcosInstall()">Instalar axcOS como app</button>
+  <div class="gate" id="axcosGate">
+    <div class="gate-icon">🖥️</div>
+    <h3 id="axcosGateTitle">axcOS — sistema operativo web</h3>
+    <p id="axcosGateText">Un escritorio completo dentro de tu navegador: ventanas, apps y juegos integrados.</p>
+    <div class="gate-actions" id="axcosGateActions"></div>
+  </div>
+  <div id="axcosWrap">
+    <div class="axcos-embed">
+      <div class="axcos-embed-bar">
+        <b>🖥️ axcOS <span style="color:var(--cyan);font-size:.7rem;letter-spacing:1.6px;">· SESIÓN ACTIVA</span></b>
+        <div class="acts">
+          <a class="btn btn-ghost" style="padding:9px 16px;font-size:.8rem" href="axcos.html?install=1" target="_blank" rel="noopener">⤓ Instalar como app</a>
+          <a class="btn btn-primary" style="padding:9px 16px;font-size:.8rem" href="https://axcgamestudios.github.io/eosaxroom/" target="_blank" rel="noopener">Abrir a pantalla completa ↗</a>
+        </div>
       </div>
+      <iframe id="axcosFrame" src="" title="axcOS" loading="lazy" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"></iframe>
     </div>
-    <div class="os-art">
-      <img src="images/games/axcos.png" alt="Interfaz de axcOS" width="1344" height="768">
-    </div>
-  </section>
-
-  <section class="os-features">
-    <div class="os-feature reveal"><h4>Escritorio real</h4><p>Ventanas arrastrables, escritorio personalizable y una interfaz completa que funciona como cualquier sistema operativo de escritorio.</p></div>
-    <div class="os-feature reveal"><h4>Apps integradas</h4><p>Utilidades, herramientas y el catálogo completo de axcStudios accesible desde el lanzador de axcOS, sin salir del sistema.</p></div>
-    <div class="os-feature reveal"><h4>Instalable como app</h4><p>Un clic y axcOS queda instalado en tu equipo: icono en el escritorio, arranque propio y experiencia de aplicación nativa.</p></div>
-  </section>
+  </div>
 </main>
 
 <!-- ================= FOOTER ================= -->
 <footer>
-  <div class="brand">
-    <img src="images/logo.png" alt="">
-    <p>© 2026 axcStudios — Todos los juegos, un estudio.</p>
-  </div>
+  <a class="brand" href="#" id="brandHome2">
+    <img src="images/logo.png" alt="axcStudios logo">axc<em>Studios</em>
+  </a>
+  <p>© 2026 axcStudios · Una cuenta para todo el universo axc</p>
   <nav>
-    <a href="#" onclick="goTab('studio');return false">Studio</a>
-    <a href="#" onclick="goTab('store');return false">Games Store</a>
-    <a href="#" onclick="goTab('axcos');return false">axcOS</a>
+    <a data-goto="studio">Studio</a>
+    <a data-goto="store">Games Store</a>
+    <a data-goto="axcos">axcOS</a>
   </nav>
 </footer>
 
-<!-- ================= MODAL ================= -->
-<div class="modal-overlay" id="installOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal">
-    <button class="modal-close" onclick="closeInstall()" aria-label="Cerrar">✕</button>
-    <img class="modal-cover" id="modalCover" src="" alt="">
-    <h3 id="modalTitle"></h3>
-    <p class="modal-sub" id="modalDesc"></p>
-    <div class="os-steps" id="modalSteps"></div>
-    <button class="btn btn-primary btn-full" id="modalBtn">Cerrar</button>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="axc-bg.js"></script>
+<script src="axc-auth.js"></script>
+<script src="axc-ui.js"></script>
+<script src="games-data.js"></script>
 <script>
-/* ============ SERVICE WORKER (instalación real) ============ */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+/* ============ SERVICE WORKER (instalación real como app) ============ */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => { }));
 }
 
-/* ============ CATÁLOGO ============ */
-const GAMES=[
- {id:'geometry-dash',title:'Geometry Dash',genre:'Rítmico · Plataformas',cat:'arcade',img:'images/games/geometry-dash.png',desc:'Plataformas rítmico donde saltas obstáculos al ritmo de la música.',url:'https://axcgamestudios.github.io/gdsh/'},
- {id:'rocket-league',title:'Rocket League',genre:'Deportes · Acción',cat:'arcade',img:'images/games/rocket-league.png',desc:'Fútbol con coches propulsados: vuelo, turbo y goles imposibles.',url:'https://axcgamestudios.github.io/ra1/'},
- {id:'angry-birds-epic',title:'Angry Birds Epic',genre:'RPG por turnos',cat:'arcade',img:'images/games/angry-birds-epic.png',desc:'RPG por turnos del universo Angry Birds: héroes, armas y pigs que derrotar.',url:'https://darkterrayt.github.io/EpicWeb/'},
- {id:'street-fighter',title:'Street Fighter',genre:'Lucha · Arcade',cat:'arcade',img:'images/games/street-fighter.png',desc:'Peleas 1v1 clásicas de arcade: hadoukens, uppercuts y combos eternos.',url:'https://gamedev8.github.io/js-sfa/default.htm'},
- {id:'fnaf-1',title:'FNAF 1',genre:'Terror · Supervivencia',cat:'fnaf',img:'images/games/fnaf-1.png',desc:'Cinco noches en la pizzería: vigila las cámaras y sobrevive a los animatrónicos.',url:'https://axcgamestudios.github.io/FN1/'},
- {id:'fnaf-2',title:'FNAF 2',genre:'Terror · Supervivencia',cat:'fnaf',img:'images/games/fnaf-2.png',desc:'La precuela con nuevos juguetes, la máscara de Freddy y la caja de música.',url:'https://axcgamestudios.github.io/fnaf/2/'},
- {id:'fnaf-3',title:'FNAF 3',genre:'Terror · Supervivencia',cat:'fnaf',img:'images/games/fnaf-3.png',desc:'Atrapado en la atracción del horror: Springtrap te caza entre humo y chispas.',url:'https://axcgamestudios2.github.io/fnaf/3/'},
- {id:'fnaf-4',title:'FNAF 4',genre:'Terror · Pesadilla',cat:'fnaf',img:'images/games/fnaf-4.png',desc:'La pesadilla en tu habitación: escucha las respiraciones y protege la puerta.',url:'https://axcgamestudios2.github.io/fnaf/4/'},
- {id:'fnaf-sl',title:'FNAF: Sister Location',genre:'Terror · Instalación',cat:'fnaf',img:'images/games/fnaf-sl.png',desc:'Desciende al búnker circense y conoce a Circus Baby y los Funtimes.',url:'https://axcgamestudios2.github.io/fnaf/sl/'},
- {id:'fnaf-ucn',title:'FNAF: Custom Night',genre:'Terror · Infinito',cat:'fnaf',img:'images/games/fnaf-ucn.png',desc:'La noche interminable: configura a 50 animatrónicos a tu manera.',url:'https://axcgamestudios2.github.io/fnaf/ucn/'},
- {id:'fnaf-ps',title:'FNAF: Pizzeria Simulator',genre:'Terror · Simulador',cat:'fnaf',img:'images/games/fnaf-ps.png',desc:'Monta tu pizzería de día y sobrevive a los animatrónicos de noche.',url:'https://axcgamestudios2.github.io/fnaf/ps/'},
- {id:'fnaf-nw',title:'FNAF: New World',genre:'Terror · Aventura',cat:'fnaf',img:'images/games/fnaf-nw.png',desc:'Un mundo nuevo y en ruinas donde los titanes animatrónicos dominan la ciudad.',url:'https://axcgamestudios.github.io/FNAW/'},
- {id:'fnaf-mp',title:'FNAF: Multijugador',genre:'Terror · Online',cat:'fnaf',img:'images/games/fnaf-mp.png',desc:'El terror compartido: huye o caza junto a otros jugadores en tiempo real.',url:'https://axcgamestudios2.github.io/fnafm/'},
- {id:'kfs',title:'Kingdom of the Forgotten Seas',genre:'Aventura · Mundo abierto',cat:'axc',img:'images/games/kingdom-forgotten-seas.png',desc:'Navega un velero por un archipiélago medieval: batallas navales, tesoros hundidos, castillos y tripulación que reclutar.',url:'https://axcgamestudios.github.io/KFS/',star:true},
- {id:'f1',title:'F1: The Game',genre:'Carreras · Simulación',cat:'axc',img:'images/games/f1-the-game.png',desc:'Vueltas rápidas en circuitos nocturnos, gestión de neumáticos y física de conducción exigente.',url:'https://axcgamestudios.github.io/googleslides/'},
- {id:'emergency-strike',title:'Emergency Strike',genre:'FPS · Táctico',cat:'axc',img:'images/games/emergency-strike.png',desc:'FPS táctico: operativo de élite en zonas urbanas de combate, oleadas enemigas y misiones bajo presión.',url:'https://axcgamestudios.github.io/Googlecom/'},
- {id:'apex-kart',title:'Apex Kart',genre:'Karts · Arcade',cat:'axc',img:'images/games/apex-kart.png',desc:'Karts arcade estilo Mario Kart: derrapes para cargar turbo, objetos explosivos, atajos y caos hasta la última vuelta.',url:'https://axcgamestudios.github.io/gmail/'},
- {id:'zona-cero',title:'Zona Cero',genre:'Battle Royale',cat:'axc',img:'images/games/zona-cero.png',desc:'La zona se cierra: recolecta recursos, fabrica mejoras y sé el último en pie.',url:'https://nflowstudios.github.io/Googlemeet/'},
- {id:'minecraft',title:'Minecraft',genre:'Sandbox · Voxel',cat:'axc',img:'images/games/minecraft.png',desc:'Sandbox voxel infinito: minar, construir, craftear, redstone y sobrevivir a las noches.',url:'https://axcgamestudios.github.io/ec18/'},
- {id:'gtv',title:'Grand Theft Voxel',genre:'Mundo abierto · Voxel',cat:'axc',img:'images/games/grand-theft-voxel.png',desc:'GTA en mundo voxel: roba coches, escapa de la policía con estrellas de búsqueda y ciudad destructible.',url:'https://axcgamestudios.github.io/GTV/'}
-];
+/* ============ FONDO 3D ÉPICO ============ */
+AXC_BG.init(document.getElementById('bg3d'));
 
-/* ============ RENDER TIENDA ============ */
-function renderGames(filter){
-  const grid=document.getElementById('gamesGrid');
-  const list=filter==='all'?GAMES:GAMES.filter(g=>g.cat===filter);
-  grid.innerHTML=list.map((g,i)=>`
-    <article class="game-card" data-cat="${g.cat}" style="animation:pageIn .6s var(--ease-out) ${Math.min(i*0.04,0.5)}s backwards">
-      <div class="game-cover">
-        ${g.star?`<span class="badge"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg> Insignia</span>`:''}
-        <img src="${g.img}" alt="Portada de ${g.title}" loading="lazy" width="675" height="900">
-      </div>
-      <div class="game-body">
-        <div class="game-genre">${g.genre}</div>
-        <div class="game-title">${g.title}</div>
-        <p class="game-desc">${g.desc}</p>
-        <div class="game-actions">
-          <a class="btn-play" href="${g.url}" target="_blank" rel="noopener" title="Jugar a ${g.title}">
-            <svg viewBox="0 0 24 24"><polygon points="6 3 20 12 6 21 6 3"/></svg> Jugar
-          </a>
-          <span class="free-tag">GRATIS</span>
-        </div>
-      </div>
-    </article>`).join('');
-}
-renderGames('all');
-
-function setFilter(f,btn){
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');
-  renderGames(f);
-}
-
-/* ============ TABS + ?tab= ============ */
-function goTab(name,updateUrl=true){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>{
-    const on=['studio','store','axcos'][i]===name;
-    b.classList.toggle('active',on);
-    b.setAttribute('aria-selected',on);
+/* ============ TILT 3D DEL LOGO DEL HÉROE ============ */
+(function () {
+  const art = document.getElementById('heroArt'), orb = document.getElementById('heroOrb');
+  if (!art || !orb || matchMedia('(pointer:coarse)').matches) return;
+  art.addEventListener('pointermove', e => {
+    const r = art.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+    orb.style.transform = `rotateY(${x * 22}deg) rotateX(${-y * 16}deg) scale(1.04)`;
   });
-  if(updateUrl)history.replaceState(null,'',location.pathname+'?tab='+name);
-  window.scrollTo({top:0,behavior:'smooth'});
-  requestAnimationFrame(scanReveals);
-}
-(function(){
-  const t=new URLSearchParams(location.search).get('tab');
-  if(['studio','store','axcos'].includes(t))goTab(t,false);
+  art.addEventListener('pointerleave', () => { orb.style.transform = ''; });
 })();
 
-/* ============ TOAST ============ */
-let toastTimer=null;
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('show'),3400);
-}
-
-/* ============ INSTALACIÓN REAL COMO APP ============ */
-let deferredPrompt=null;
-const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
-
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  document.getElementById('navInstall').classList.add('ready');
+/* ============ UI DEL SISTEMA DE CUENTAS ============ */
+AXC_UI.init({
+  chip: '#accountChip',
+  install: { app: 'main', name: 'axcStudios', icon: 'images/icon-512.png' },
+  onAuth: refreshGates,
+  onStatus: refreshNet,
+  onPresence: refreshNet
+});
+document.getElementById('navInstall').addEventListener('click', () => AXC_UI.nativeInstall());
+document.getElementById('installMain').addEventListener('click', () => AXC_UI.nativeInstall());
+document.getElementById('heroApps').addEventListener('click', () => {
+  document.querySelector('.apps-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
-window.addEventListener('appinstalled',()=>{
-  deferredPrompt=null;
-  toast('axcStudios instalada. ¡Búscala en tu escritorio!');
-  updateInstallUI();
-});
+function refreshNet() {
+  const pill = document.getElementById('netPill'), lab = document.getElementById('netLabel');
+  const s = AXC.state;
+  pill.classList.remove('on', 'wait');
+  if (s.ws === 'online') { pill.classList.add('on'); lab.textContent = s.presence > 1 ? s.presence + ' en línea' : 'red axc activa'; }
+  else if (s.ws === 'connecting') { pill.classList.add('wait'); lab.textContent = 'conectando red…'; }
+  else lab.textContent = 'red axc dormida';
+}
 
-function updateInstallUI(){
-  const btn=document.getElementById('navInstall');
-  const label=document.getElementById('navInstallLabel');
-  if(isStandalone()){
-    btn.classList.remove('ready');btn.classList.add('done');btn.disabled=true;
-    label.textContent='App instalada';
+/* ============ CANDADOS: sesión + app instalada ============ */
+function refreshGates() {
+  const u = AXC.state.user, sa = AXC.standalone();
+  /* pestañas: candado si no hay sesión */
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('unlocked', !!u));
+  /* STORE: ver catálogo = sesión; jugar = app instalada */
+  const gate = document.getElementById('storeGate'), wrap = document.getElementById('storeWrap');
+  gate.classList.toggle('show', !u);
+  wrap.classList.toggle('locked-wrap', !u);
+  /* AXCOS: requiere sesión + app instalada */
+  const ag = document.getElementById('axcosGate'), aw = document.getElementById('axcosWrap');
+  const frame = document.getElementById('axcosFrame');
+  if (!u) {
+    ag.classList.add('show'); aw.style.display = 'none';
+    document.getElementById('axcosGateTitle').textContent = 'axcOS es para miembros';
+    document.getElementById('axcosGateText').textContent = 'Inicia sesión con tu cuenta axc para usar el sistema operativo web. Si no tienes cuenta, se crea en un minuto con código de verificación real.';
+    document.getElementById('axcosGateActions').innerHTML =
+      '<button class="btn btn-primary" onclick="AXC_UI.openAuth(\'signup\')">✨ Crear mi cuenta</button>' +
+      '<button class="btn btn-ghost" onclick="AXC_UI.openAuth(\'login\')">Ya tengo cuenta</button>';
+  } else if (!sa) {
+    ag.classList.add('show'); aw.style.display = 'none';
+    document.getElementById('axcosGateTitle').textContent = 'Instala axcOS como app 📦';
+    document.getElementById('axcosGateText').textContent = 'axcOS corre dentro de su propia aplicación instalada (a pantalla completa, como un sistema operativo de verdad). Instálala desde su página dedicada del mismo estudio:';
+    document.getElementById('axcosGateActions').innerHTML =
+      '<a class="btn btn-primary" href="axcos.html?install=1" target="_blank" rel="noopener">⤓ Ir a instalar axcOS</a>' +
+      '<button class="btn btn-ghost" onclick="AXC_UI.openInstall({app:\'axcos\',name:\'axcOS\',icon:\'images/axcos-icon-512.png\'})">¿Cómo se instala?</button>';
+  } else {
+    ag.classList.remove('show'); aw.style.display = '';
+    if (!frame.src) frame.src = 'https://axcgamestudios.github.io/eosaxroom/';
   }
 }
-updateInstallUI();
 
-async function installApp(){
-  if(isStandalone()){toast('Ya estás usando la app instalada');return;}
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const {outcome}=await deferredPrompt.userChoice;
-    if(outcome==='accepted')toast('Instalando axcStudios…');
-    deferredPrompt=null;
-  }else{
-    openInstallHelp();
-  }
-}
+/* botones del gate de la tienda */
+document.getElementById('gateSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
+document.getElementById('gateLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
 
-/* ============ MODAL ============ */
-const overlay=document.getElementById('installOverlay');
-const modalBtn=document.getElementById('modalBtn');
-let modalAction=null;
-
-function showModal({cover,title,desc,steps,btnText,action}){
-  document.getElementById('modalCover').src=cover;
-  document.getElementById('modalTitle').textContent=title;
-  document.getElementById('modalDesc').textContent=desc;
-  document.getElementById('modalSteps').innerHTML=steps.map(s=>
-    `<div class="os-step"><div class="os-step-num">${s.n}</div><p>${s.t}</p></div>`).join('');
-  modalBtn.textContent=btnText||'Cerrar';
-  modalAction=action||null;
-  overlay.classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeInstall(){
-  overlay.classList.remove('open');
-  document.body.style.overflow='';
-}
-modalBtn.addEventListener('click',()=>{
-  closeInstall();
-  if(modalAction)modalAction();
-});
-overlay.addEventListener('click',e=>{if(e.target===overlay)closeInstall();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeInstall();});
-
-function uaDevice(){
-  const ua=navigator.userAgent;
-  if(/iPhone|iPad|iPod/i.test(ua))return 'ios';
-  if(/Android/i.test(ua))return 'android';
-  return 'desktop';
-}
-
-/* Ayuda: instalación manual con el navegador (fallback) */
-function openInstallHelp(){
-  const stepsByDevice={
-    desktop:[
-      {n:1,t:'En <strong>Chrome</strong> o <strong>Edge</strong>, busca en la barra de direcciones el icono de instalar <strong>⤓</strong> y pulsa <strong>«Instalar página como aplicación»</strong>.'},
-      {n:2,t:'Si no lo ves: abre el menú <strong>⋮</strong> del navegador → <strong>«Aplicaciones» / «Instalar página como aplicación»</strong>.'},
-      {n:3,t:'La app aparecerá en tu escritorio y en el menú de inicio, como cualquier programa.'}
-    ],
-    android:[
-      {n:1,t:'En <strong>Chrome</strong>, toca el menú <strong>⋮</strong> de arriba a la derecha.'},
-      {n:2,t:'Pulsa <strong>«Instalar aplicación»</strong> (o «Añadir a pantalla de inicio»).'},
-      {n:3,t:'Confirma y el icono de axcStudios quedará junto a tus demás apps.'}
-    ],
-    ios:[
-      {n:1,t:'Abre esta página en <strong>Safari</strong>.'},
-      {n:2,t:'Toca el botón <strong>Compartir</strong> (el cuadrado con la flecha hacia arriba).'},
-      {n:3,t:'Elige <strong>«Añadir a pantalla de inicio»</strong> y confirma.'}
-    ]
-  };
-  showModal({
-    cover:'images/icon-512.png',
-    title:'Instalar axcStudios como app',
-    desc:'Tu navegador todavía no ha ofrecido la instalación automática (puede tardar unos segundos en activarse). Hazlo manualmente en menos de un minuto:',
-    steps:stepsByDevice[uaDevice()],
-    btnText:'Reintentar instalación',
-    action:()=>setTimeout(installApp,400)
-  });
-}
-
-/* axcOS: instrucciones específicas (es otra web, se instala desde su propia página) */
-function openAxcosInstall(){
-  const base=[
-    {n:1,t:'Pulsa <strong>«Abrir axcOS»</strong> para entrar en el sistema operativo.'},
-    {n:2,t:uaDevice()==='ios'
-      ?'En Safari, toca <strong>Compartir → «Añadir a pantalla de inicio»</strong> para instalarlo como app.'
-      :(uaDevice()==='android'
-        ?'En Chrome, toca <strong>⋮ → «Instalar aplicación»</strong>.'
-        :'En la barra de direcciones de axcOS, pulsa el icono <strong>⤓</strong> o menú <strong>⋮ → «Instalar página como aplicación»</strong>.')},
-    {n:3,t:'axcOS quedará instalado como un programa más: icono propio y arranque a pantalla completa.'}
-  ];
-  showModal({
-    cover:'images/games/axcos.png',
-    title:'Instalar axcOS como app',
-    desc:'axcOS es el sistema operativo web de axcStudios: escritorio completo, ventanas, apps y juegos integrados. Se instala desde su propia página:',
-    steps:base,
-    btnText:'Abrir axcOS',
-    action:()=>window.open('https://axcgamestudios.github.io/eosaxroom/','_blank','noopener')
-  });
-}
-
-/* ============ FONDO ANIMADO (red de partículas) ============ */
-(function(){
-  const cv=document.getElementById('bg');
-  const ctx=cv.getContext('2d');
-  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let W,H,nodes=[];
-  const N=matchMedia('(max-width: 768px)').matches?32:66;
-  const LINK=130;
-
-  function resize(){
-    W=cv.width=innerWidth;H=cv.height=innerHeight;
-  }
-  function makeNodes(){
-    nodes=Array.from({length:N},()=>({
-      x:Math.random()*W,y:Math.random()*H,
-      vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,
-      r:Math.random()*1.6+.7
-    }));
-  }
-  function frame(){
-    ctx.clearRect(0,0,W,H);
-    for(const n of nodes){
-      n.x+=n.vx;n.y+=n.vy;
-      if(n.x<0||n.x>W)n.vx*=-1;
-      if(n.y<0||n.y>H)n.vy*=-1;
-      ctx.beginPath();
-      ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
-      ctx.fillStyle='rgba(46,124,246,.45)';
-      ctx.fill();
+/* ============ TIENDA ============ */
+let storeFilter = 'all';
+function renderStore() {
+  const q = document.getElementById('storeSearch').value || '';
+  axcRenderGames(document.getElementById('gamesGrid'), {
+    filter: storeFilter, query: q,
+    onPlay: (g) => {
+      if (!AXC.state.user) return AXC_UI.openAuth('login');
+      if (!AXC.standalone()) return AXC_UI.openInstall({ app: 'store', name: 'axcStudios Games', icon: 'images/store-icon-512.png' });
+      location.href = 'player.html#' + g.id;
     }
-    for(let i=0;i<nodes.length;i++){
-      for(let j=i+1;j<nodes.length;j++){
-        const a=nodes[i],b=nodes[j];
-        const dx=a.x-b.x,dy=a.y-b.y;
-        const d=dx*dx+dy*dy;
-        if(d<LINK*LINK){
-          const alpha=(1-Math.sqrt(d)/LINK)*.15;
-          ctx.beginPath();
-          ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
-          ctx.strokeStyle=`rgba(46,124,246,${alpha})`;
-          ctx.lineWidth=1;
-          ctx.stroke();
-        }
-      }
-    }
-  }
-  function loop(){frame();requestAnimationFrame(loop);}
-  resize();makeNodes();
-  addEventListener('resize',()=>{resize();makeNodes();});
-  if(reduced){frame();}else{loop();}
+  });
+  document.getElementById('storeCount').textContent = window.AXC_GAMES.length + ' juegos';
+}
+document.getElementById('storeFilters').querySelectorAll('.filter-chip').forEach(b => {
+  b.addEventListener('click', () => {
+    document.getElementById('storeFilters').querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
+    b.classList.add('on');
+    storeFilter = b.dataset.f;
+    renderStore();
+  });
+});
+document.getElementById('storeSearch').addEventListener('input', renderStore);
+renderStore();
+
+/* ============ TABS ============ */
+function goTab(name, updateUrl = true) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    const on = b.dataset.tab === name;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on);
+  });
+  if (updateUrl) history.replaceState(null, '', location.pathname + '?tab=' + name);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  requestAnimationFrame(scanReveals);
+  if (name === 'axcos') refreshGates();
+}
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => goTab(b.dataset.tab)));
+document.getElementById('brandHome').addEventListener('click', e => { e.preventDefault(); goTab('studio'); });
+document.getElementById('brandHome2').addEventListener('click', e => { e.preventDefault(); goTab('studio'); });
+document.getElementById('heroStore').addEventListener('click', () => goTab('store'));
+document.querySelectorAll('footer nav a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); goTab(a.dataset.goto); }));
+(function () {
+  const t = new URLSearchParams(location.search).get('tab');
+  if (['studio', 'store', 'axcos'].includes(t)) goTab(t, false);
 })();
 
 /* ============ REVEAL ============ */
-const io=new IntersectionObserver(entries=>{
-  entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});
-},{threshold:.12});
-function scanReveals(){document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));}
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+}, { threshold: .12 });
+function scanReveals() { document.querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el)); }
 scanReveals();
+
+/* estado inicial de candados y red */
+refreshGates();
+refreshNet();
 </script>
+
 </body>
 </html>
