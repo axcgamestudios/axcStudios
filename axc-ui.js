@@ -321,7 +321,6 @@ window.AXC_UI = (function () {
         <button class="axcplay-back" id="axcPlayBack">← Volver</button>
         <div class="axcplay-gt"><img src="${game.img}" alt=""><b>${esc(game.title)}</b><span>${esc(game.genre || '')}</span></div>
         <a class="axcplay-act" id="axcPlayFull" title="Pantalla completa">⛶</a>
-        <a class="axcplay-act" id="axcPlayExt" href="${game.url}" target="_blank" rel="noopener" title="Abrir en una pestaña aparte">↗ Pestaña</a>
       </div>
       <div class="axcplay-stage" id="axcPlayStage">
         <div class="axcplay-load">
