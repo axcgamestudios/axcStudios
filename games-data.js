@@ -1,5 +1,6 @@
 /* games-data.js — catálogo central de juegos axcStudios (compartido por index y store) */
 window.AXC_GAMES = [
+  { id: 'cod-warzone', title: 'Call of Duty: Warzone', genre: 'FPS · Battle Royale', cat: 'axc', img: 'images/games/cod-warzone.png', desc: 'El battle royale definitivo: despliegue en Verdansk, botín por raridades, el Gulag y ser el último escuadrón en pie.', url: 'https://axcgamestudios.github.io/cod1/', star: true },
   { id: 'geometry-dash', title: 'Geometry Dash', genre: 'Rítmico · Plataformas', cat: 'arcade', img: 'images/games/geometry-dash.png', desc: 'Plataformas rítmico donde saltas obstáculos al ritmo de la música.', url: 'https://axcgamestudios.github.io/gdsh/' },
   { id: 'rocket-league', title: 'Rocket League', genre: 'Deportes · Acción', cat: 'arcade', img: 'images/games/rocket-league.png', desc: 'Fútbol con coches propulsados: vuelo, turbo y goles imposibles.', url: 'https://axcgamestudios.github.io/ra1/' },
   { id: 'angry-birds-epic', title: 'Angry Birds Epic', genre: 'RPG por turnos', cat: 'arcade', img: 'images/games/angry-birds-epic.png', desc: 'RPG por turnos del universo Angry Birds: héroes, armas y pigs que derrotar.', url: 'https://darkterrayt.github.io/EpicWeb/' },
