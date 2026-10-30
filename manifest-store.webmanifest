@@ -1,7 +1,7 @@
 {
   "name": "axcStudios Games — Tienda de juegos",
   "short_name": "axcGames",
-  "description": "La tienda de juegos de axcStudios como app: 20+ juegos gratis, buscador y reproductor integrado.",
+  "description": "La tienda de juegos de axcStudios como app: 10 juegos gratis, buscador y reproductor integrado.",
   "id": "axcstudios-store",
   "start_url": "./store.html?src=pwa",
   "scope": "./",

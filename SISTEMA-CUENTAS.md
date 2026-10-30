@@ -15,7 +15,7 @@ funciona por dentro y cómo agregar el mismo sistema a cualquier otra página we
 - Al verificarlo, la cuenta queda **guardada en un servidor** (no en la página, no es
   una simulación: los datos viven en un servidor real en la nube).
 - Con esa misma cuenta puede **iniciar sesión en cualquier otra página que tenga el
-  sistema** (la tienda, axcOS, los juegos, otras webs del estudio).
+  sistema** (la tienda, los juegos, otras webs del estudio).
 
 ## 2. Arquitectura (cómo funciona por dentro)
 
@@ -179,16 +179,14 @@ De `AXC_UI` (interfaz): `init`, `openAuth('login'|'signup')`, `closeAuth`,
 | Studio (pestaña principal) | ✔ visible | ✔ |
 | Catálogo de la tienda | 🔒 candado | ✔ |
 | Jugar (botón Jugar) | 🔒 | ▶ **juega aquí mismo**, a pantalla completa, con animación de lanzamiento |
-| axcOS | 🔒 | ▶ **corre nativo aquí**, embebido en la página (con botón de pantalla completa) |
 
-Si quieres las apps en tu escritorio (opcional), las 3 se instalan desde el mismo repo
-(como los FNAF: mismo sitio, links propios):
+Si quieres las apps en tu escritorio (opcional), las 2 se instalan desde el mismo repo
+(mismo sitio, links propios):
 
 | App | Link | Manifest |
 |---|---|---|
 | axcStudios (estudio) | `…/axcStudios/` | `manifest.webmanifest` |
 | axcStudios Games (tienda) | `…/axcStudios/store.html` | `manifest-store.webmanifest` |
-| axcOS (sistema operativo) | `…/axcStudios/axcos.html` | `manifest-axcos.webmanifest` |
 
 ## 8. Seguridad y límites (léelo)
 
@@ -228,11 +226,10 @@ axc-auth.js               ← biblioteca del sistema (el corazón, portable)
 axc-ui.js                 ← interfaz (modal liquid glass con Buzón axc v2, reproductor
                              de juegos en página, glow del cursor, instalación opcional)
 games-data.js             ← catálogo de juegos (compartido)
-index.html                ← estudio (3 pestañas: Studio / tienda / axcOS embebido)
+index.html                ← estudio (2 pestañas: Studio / tienda)
 store.html                ← Tienda (manifest propio, juegos corren en la página)
-axcos.html                ← axcOS (manifest propio, embebe eosaxroom)
 player.html               ← reproductor directo de un juego (enlace #id del juego)
-manifest*.webmanifest     ← 3 manifests (una app = un manifest + un link)
+manifest*.webmanifest     ← 2 manifests (una app = un manifest + un link)
 sw.js                     ← service worker (para instalar como app, opcional)
 cuenta-demo.html          ← ejemplo mínimo de integración (cópialo)
 ```

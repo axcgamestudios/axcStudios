@@ -1,5 +1,5 @@
 /* axc-ui.js — Interfaz axc v2 · LIQUID GLASS
-   Requiere: axc-auth.js. Usado por index.html, store.html, axcos.html, player.html
+   Requiere: axc-auth.js. Usado por index.html, store.html, player.html
    - Diseño liquid glass (cristal líquido con reflejos especulares)
    - Glow que sigue el cursor (clase .glow — se aplica solo)
    - Buzón axc v2: el código llega y SE MUESTRA solo, en grande
@@ -249,7 +249,7 @@ window.AXC_UI = (function () {
     desktop: [
       { t: 'Es <strong>opcional</strong>: en <strong>Chrome</strong> o <strong>Edge</strong> pulsa el icono ⤓ de la barra de direcciones y elige <strong>«Instalar página como aplicación»</strong>.' },
       { t: 'Si no lo ves: menú <strong>⋮</strong> → <strong>«Aplicaciones» / «Instalar página como aplicación»</strong>.' },
-      { t: 'La app quedará en tu escritorio y menú de inicio. Todo funciona igual sin instalar: los juegos y axcOS corren en la página.' }
+      { t: 'La app quedará en tu escritorio y menú de inicio. Todo funciona igual sin instalar: los juegos corren en la página.' }
     ],
     android: [
       { t: 'Es <strong>opcional</strong>: en <strong>Chrome</strong>, toca el menú <strong>⋮</strong> de arriba a la derecha.' },
@@ -273,7 +273,7 @@ window.AXC_UI = (function () {
         <div class="axcui-ok" id="axcInstNative" style="display:none"></div>
         <div class="axcui-steps">${INSTALL_STEPS[dev].map((s, i) => `<div class="axcui-step"><div class="axcui-step-n">${i + 1}</div><p>${s.t}</p></div>`).join('')}</div>
         <button class="axcui-btn" id="axcInstBtn">⚡ Instalar ${instCfg.name} ahora</button>
-        <p class="axcui-note">Instalar es <strong>opcional</strong>: lo añade a tu escritorio como programa, pero los juegos y axcOS corren perfectamente aquí mismo, en la página.</p>
+        <p class="axcui-note">Instalar es <strong>opcional</strong>: lo añade a tu escritorio como programa, pero los juegos corren perfectamente aquí mismo, en la página.</p>
       </div>`;
     const nb = $('#axcInstBtn', instRoot);
     const upd = () => {
@@ -452,7 +452,7 @@ window.AXC_UI = (function () {
         <div class="axcui-f"><label>Usuario</label><input id="axcLu" autocomplete="username" spellcheck="false"></div>
         <div class="axcui-f"><label>Contraseña</label><input id="axcLp" type="password" autocomplete="current-password"></div>
         <button class="axcui-btn" id="axcLb">Entrar →</button>
-        <p class="axcui-note">La misma cuenta funciona en <strong>todas las páginas de axcStudios</strong> (tienda, juegos, axcOS y cualquier web con el sistema axc).</p>`;
+        <p class="axcui-note">La misma cuenta funciona en <strong>todas las páginas de axcStudios</strong> (tienda, juegos y cualquier web con el sistema axc).</p>`;
       const go = async () => {
         const btn = $('#axcLb', authRoot); btn.disabled = true; btn.textContent = 'Verificando…';
         const r = await AXC.login({ user: $('#axcLu', authRoot).value, pass: $('#axcLp', authRoot).value });

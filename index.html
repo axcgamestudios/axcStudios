@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>axcStudios — Juega sin límites</title>
-<meta name="description" content="axcStudios: estudio independiente de videojuegos web. 20+ juegos gratis, apps instalables y axcOS, el sistema operativo web. Una cuenta para todo.">
+<meta name="description" content="axcStudios: estudio independiente de videojuegos web. 10 juegos gratis que corres en tu navegador, instalación opcional. Una cuenta para todo.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="images/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -275,15 +275,6 @@ body.boot .hero-art{animation-delay:1.68s}
 .gate p{color:var(--text-secondary);max-width:480px;line-height:1.7}
 .gate-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 .locked-wrap{opacity:.14;filter:blur(3px) saturate(.4);pointer-events:none;user-select:none}
-/* axcOS embed */
-.axcos-embed{border-radius:22px;overflow:hidden;border:1px solid rgba(46,124,246,.3);box-shadow:0 30px 80px rgba(0,0,0,.5);background:#05060a}
-.axcos-embed-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;
-  background:linear-gradient(165deg,rgba(255,255,255,.08),rgba(13,17,29,.6));border-bottom:1px solid rgba(255,255,255,.1);
-  backdrop-filter:blur(22px) saturate(175%);-webkit-backdrop-filter:blur(22px) saturate(175%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.14);flex-wrap:wrap}
-.axcos-embed-bar b{font-family:var(--font-display);font-size:.95rem}
-.axcos-embed-bar .acts{display:flex;gap:8px;flex-wrap:wrap}
-.axcos-embed iframe{width:100%;height:min(72vh,760px);border:0;display:block;background:#05060a}
 
 /* ---------- FOOTER ---------- */
 footer{border-top:1px solid var(--border);padding:34px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;max-width:1340px;margin:0 auto}
@@ -359,7 +350,6 @@ footer nav a:hover{color:var(--accent)}
   <nav class="tabs" role="tablist" aria-label="Secciones">
     <button class="tab-btn active" role="tab" aria-selected="true" data-tab="studio">Studio</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="store"><span class="lock">🔒</span>Games Store<span class="dot-live"></span></button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="axcos"><span class="lock">🔒</span>axcOS<span class="dot-live"></span></button>
   </nav>
   <div class="nav-right">
     <span class="net-pill" id="netPill"><i></i><span id="netLabel">red axc…</span></span>
@@ -377,7 +367,7 @@ footer nav a:hover{color:var(--accent)}
     <div class="hero-copy">
       <span class="eyebrow">Estudio independiente · web gaming</span>
       <h1><span class="w">Juega.</span> <span class="w">Instala.</span><br><em>Vive el universo axc.</em></h1>
-      <p class="lead">En axcStudios creamos mundos que corren directo en tu navegador: 20+ juegos gratis que juegas aquí mismo a pantalla completa y axcOS, nuestro sistema operativo web integrado en la página. Crea tu cuenta una vez y úsala en todas las páginas axc.</p>
+      <p class="lead">En axcStudios creamos mundos que corren directo en tu navegador: 10 juegos gratis que juegas aquí mismo a pantalla completa, con cuenta única para todo el universo axc.</p>
       <div class="hero-cta">
         <button class="btn btn-primary" id="heroStore">Explorar la tienda →</button>
         <button class="btn btn-ghost" id="heroApps">⤓ Instalar apps · opcional</button>
@@ -385,7 +375,7 @@ footer nav a:hover{color:var(--accent)}
       <div class="hero-badges">
         <span class="hbadge">⚡ Juega sin instalar nada</span>
         <span class="hbadge">👤 Una cuenta, <b>todas las webs</b></span>
-        <span class="hbadge">🖥 axcOS integrado en la página</span>
+        <span class="hbadge">🎮 <b>10 juegos gratis</b></span>
       </div>
     </div>
     <div class="hero-art" id="heroArt">
@@ -393,32 +383,32 @@ footer nav a:hover{color:var(--accent)}
         <div class="hero-ring"></div>
         <img class="hero-logo" src="images/logo.png" alt="Emblema 3D de axcStudios">
       </div>
-      <div class="hchip a"><i>🎮</i> 20+ juegos</div>
-      <div class="hchip b"><i>📦</i> 3 apps del mismo estudio</div>
+      <div class="hchip a"><i>🎮</i> 10 juegos</div>
+      <div class="hchip b"><i>📦</i> 2 apps del estudio</div>
       <div class="hchip c"><i>🔐</i> Cifrado PBKDF2</div>
     </div>
   </section>
 
   <section class="hero-stats">
-    <div class="stat reveal"><div class="stat-num">20<em>+</em></div><div class="stat-label">Juegos publicados</div></div>
+    <div class="stat reveal"><div class="stat-num">10</div><div class="stat-label">Juegos publicados</div></div>
     <div class="stat reveal"><div class="stat-num"><em>100%</em></div><div class="stat-label">Gratis para jugar</div></div>
-    <div class="stat reveal"><div class="stat-num">3</div><div class="stat-label">Apps instalables</div></div>
+    <div class="stat reveal"><div class="stat-num">2</div><div class="stat-label">Apps opcionales</div></div>
     <div class="stat reveal"><div class="stat-num">1</div><div class="stat-label">Cuenta para todo</div></div>
   </section>
 
-  <!-- APPS TRÍO: instalación OPCIONAL (mismo repo, links propios como los FNAF) -->
+  <!-- APPS: instalación OPCIONAL -->
   <section class="section">
     <div class="section-head reveal">
       <div class="section-kicker">Instalación opcional</div>
-      <h2>Tres apps, si las quieres en tu escritorio</h2>
-      <p class="sub">Todo corre en la página sin instalar nada. Pero si quieres el estudio como programa de verdad en tu escritorio, cada app se instala por separado, como los FNAF: mismo sitio, link e icono propios.</p>
+      <h2>Dos apps, si las quieres en tu escritorio</h2>
+      <p class="sub">Todo corre en la página sin instalar nada. Pero si quieres el estudio como programa de verdad en tu escritorio, cada app se instala por separado: mismo sitio, link e icono propios.</p>
     </div>
     <div class="apps-grid">
       <article class="app-card reveal">
         <span class="app-pill">Esta página</span>
         <img src="images/icon-512.png" alt="Icono de axcStudios">
         <h3>axcStudios</h3>
-        <p>El estudio completo: información, tienda y axcOS desde una sola app. Opcional: sin instalar, todo funciona aquí.</p>
+        <p>El estudio completo: información y tienda desde una sola app. Opcional: sin instalar, todo funciona aquí.</p>
         <button class="btn btn-primary" id="installMain">⤓ Instalar el estudio</button>
       </article>
       <article class="app-card reveal">
@@ -427,13 +417,6 @@ footer nav a:hover{color:var(--accent)}
         <h3>axcStudios Games</h3>
         <p>La tienda como app aparte: buscador, filtros y juegos dentro. Los juegos también corren en la página principal.</p>
         <a class="btn btn-primary" href="store.html?install=1" target="_blank" rel="noopener">⤓ Instalar la tienda</a>
-      </article>
-      <article class="app-card reveal">
-        <span class="app-pill">app propia · opcional</span>
-        <img src="images/axcos-icon-512.png" alt="Icono de axcOS">
-        <h3>axcOS</h3>
-        <p>El sistema operativo web, también como app aparte. Y corre nativo aquí: en la pestaña axcOS de esta misma página.</p>
-        <a class="btn btn-primary" href="axcos.html?install=1" target="_blank" rel="noopener">⤓ Instalar axcOS</a>
       </article>
     </div>
   </section>
@@ -448,7 +431,7 @@ footer nav a:hover{color:var(--accent)}
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
         <h3>Juegos arcade clásicos</h3>
-        <p>Las leyendas que nos hicieron crecer: plataformas rítmicos, fútbol con coches, RPG por turnos y peleas 1v1. Los arcades de siempre, reconstruidos para la web moderna y jugables al instante.</p>
+        <p>Las leyendas que nos hicieron crecer: fútbol con coches propulsados y arcades de acción. Los clásicos, reconstruidos para la web moderna y jugables al instante.</p>
       </article>
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
@@ -457,8 +440,8 @@ footer nav a:hover{color:var(--accent)}
       </article>
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-        <h3>axcOS, sistema operativo web</h3>
-        <p>Nuestra apuesta más ambiciosa: un escritorio completo dentro del navegador. Instálalo como app y convierte cualquier dispositivo en una consola axcStudios con tu propia sesión.</p>
+        <h3>Terror con identidad propia</h3>
+        <p>The Lost Pizzeria, nuestra saga de terror: pizzerías abandonadas, animatrónicos que rondan en la oscuridad y noches enteras por sobrevivir.</p>
       </article>
       <article class="card reveal">
         <div class="card-icon"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
@@ -494,12 +477,12 @@ footer nav a:hover{color:var(--accent)}
         <p>No vivimos de copiar: Kingdom of the Forgotten Seas, Zona Cero o Grand Theft Voxel nacen aquí, con sus propias reglas, estética y universos que crecen entrega tras entrega.</p></div>
       </div>
       <div class="obj reveal"><div class="obj-num">03</div>
-        <div><h4>Construir la plataforma del futuro</h4>
-        <p>axcOS es la prueba de que la web puede ser mucho más que páginas. Un sistema operativo completo, instalable y en constante expansión, desarrollado por y para jugadores.</p></div>
+        <div><h4>Llevar la web al límite</h4>
+        <p>La web es nuestra consola: gráficos 3D en tiempo real, cuentas con verificación real y juegos que arrancan en segundos en cualquier dispositivo, sin instalar nada.</p></div>
       </div>
       <div class="obj reveal"><div class="obj-num">04</div>
         <div><h4>Sostener un ecosistema gratuito</h4>
-        <p>Veinte juegos gratis hoy, más mañana. Nuestro modelo se sostiene sobre la comunidad y la pasión por crear, no sobre el bolsillo de quien solo quiere jugar.</p></div>
+        <p>Diez juegos gratis hoy, más mañana. Nuestro modelo se sostiene sobre la comunidad y la pasión por crear, no sobre el bolsillo de quien solo quiere jugar.</p></div>
       </div>
     </div>
   </section>
@@ -539,33 +522,11 @@ footer nav a:hover{color:var(--accent)}
       <div class="filter-chips" id="storeFilters">
         <button class="filter-chip on" data-f="all">Todos</button>
         <button class="filter-chip" data-f="arcade">Arcade</button>
-        <button class="filter-chip" data-f="fnaf">FNAF</button>
+        <button class="filter-chip" data-f="fnaf">The Lost Pizzeria</button>
         <button class="filter-chip" data-f="axc">axc Originals</button>
       </div>
     </div>
     <div class="games-grid" id="gamesGrid"></div>
-  </div>
-</main>
-
-<!-- ================= PÁGINA 3: AXCOS (sesión + app) ================= -->
-<main id="page-axcos" class="page" role="tabpanel">
-  <div class="gate" id="axcosGate">
-    <div class="gate-icon">🖥️</div>
-    <h3 id="axcosGateTitle">axcOS — sistema operativo web</h3>
-    <p id="axcosGateText">Un escritorio completo dentro de tu navegador: ventanas, apps y juegos integrados.</p>
-    <div class="gate-actions" id="axcosGateActions"></div>
-  </div>
-  <div id="axcosWrap">
-    <div class="axcos-embed" id="axcosEmbed">
-      <div class="axcos-embed-bar">
-        <b>🖥️ axcOS <span style="color:var(--cyan);font-size:.7rem;letter-spacing:1.6px;">· CORRIENDO AQUÍ, EN LA PÁGINA</span></b>
-        <div class="acts">
-          <button class="btn btn-primary" style="padding:9px 16px;font-size:.8rem" id="axcosFs">⛶ Pantalla completa</button>
-          <a class="btn btn-ghost" style="padding:9px 16px;font-size:.8rem" href="axcos.html?install=1" target="_blank" rel="noopener">⤓ Instalar · opcional</a>
-        </div>
-      </div>
-      <iframe id="axcosFrame" title="axcOS" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"></iframe>
-    </div>
   </div>
 </main>
 
@@ -578,7 +539,6 @@ footer nav a:hover{color:var(--accent)}
   <nav>
     <a data-goto="studio">Studio</a>
     <a data-goto="store">Games Store</a>
-    <a data-goto="axcos">axcOS</a>
   </nav>
 </footer>
 
@@ -665,27 +625,7 @@ function refreshGates() {
   const gate = document.getElementById('storeGate'), wrap = document.getElementById('storeWrap');
   gate.classList.toggle('show', !u);
   wrap.classList.toggle('locked-wrap', !u);
-  /* AXCOS: solo sesión — corre nativo aquí, sin instalar nada */
-  const ag = document.getElementById('axcosGate'), aw = document.getElementById('axcosWrap');
-  const frame = document.getElementById('axcosFrame');
-  if (!u) {
-    ag.classList.add('show'); aw.style.display = 'none';
-    document.getElementById('axcosGateTitle').textContent = 'axcOS es para miembros';
-    document.getElementById('axcosGateText').textContent = 'Inicia sesión con tu cuenta axc y el sistema operativo web arranca aquí mismo, integrado en la página, sin instalar nada. Si no tienes cuenta, se crea en un minuto con código de verificación real.';
-    document.getElementById('axcosGateActions').innerHTML =
-      '<button class="btn btn-primary" onclick="AXC_UI.openAuth(\'signup\')">✨ Crear mi cuenta</button>' +
-      '<button class="btn btn-ghost" onclick="AXC_UI.openAuth(\'login\')">Ya tengo cuenta</button>';
-  } else {
-    ag.classList.remove('show'); aw.style.display = '';
-    if (!frame.getAttribute('src')) frame.src = 'https://axcgamestudios.github.io/eosaxroom/';
-  }
 }
-/* pantalla completa del axcOS embebido */
-document.getElementById('axcosFs').addEventListener('click', () => {
-  const em = document.getElementById('axcosEmbed');
-  if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
-  else (em.requestFullscreen || em.webkitRequestFullscreen || function () { }).call(em);
-});
 
 /* botones del gate de la tienda */
 document.getElementById('gateSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
@@ -728,7 +668,7 @@ function goTab(name, updateUrl = true) {
   if (updateUrl) history.replaceState(null, '', location.pathname + '?tab=' + name);
   window.scrollTo({ top: 0, behavior: 'smooth' });
   requestAnimationFrame(scanReveals);
-  if (name === 'axcos') refreshGates();
+  if (name === 'store') refreshGates();
 }
 document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => goTab(b.dataset.tab)));
 document.getElementById('brandHome').addEventListener('click', e => { e.preventDefault(); goTab('studio'); });
@@ -737,7 +677,7 @@ document.getElementById('heroStore').addEventListener('click', () => goTab('stor
 document.querySelectorAll('footer nav a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); goTab(a.dataset.goto); }));
 (function () {
   const t = new URLSearchParams(location.search).get('tab');
-  if (['studio', 'store', 'axcos'].includes(t)) goTab(t, false);
+  if (['studio', 'store'].includes(t)) goTab(t, false);
 })();
 
 /* ============ REVEAL ============ */

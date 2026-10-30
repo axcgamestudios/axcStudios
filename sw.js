@@ -1,17 +1,15 @@
 /* axcStudios — Service Worker
-   Da soporte PWA (instalación OPCIONAL como app) a las 3 apps del repo:
-   index.html (sitio), store.html (tienda) y axcos.html (sistema operativo). */
-const CACHE = 'axcstudios-v5';
+   Da soporte PWA (instalación OPCIONAL como app) a las 2 apps del repo:
+   index.html (sitio) y store.html (tienda). */
+const CACHE = 'axcstudios-v6';
 const CORE = [
   './',
   './index.html',
   './store.html',
-  './axcos.html',
   './player.html',
   './cuenta-demo.html',
   './manifest.webmanifest',
   './manifest-store.webmanifest',
-  './manifest-axcos.webmanifest',
   './axc-auth.js',
   './axc-ui.js',
   './axc-bg.js',
@@ -23,20 +21,8 @@ const CORE = [
   './images/store-icon-192.png',
   './images/store-icon-512.png',
   './images/store-icon-maskable-512.png',
-  './images/axcos-icon-192.png',
-  './images/axcos-icon-512.png',
-  './images/axcos-icon-maskable-512.png',
-  './images/games/geometry-dash.png',
-  './images/games/rocket-league.png',
-  './images/games/angry-birds-epic.png',
-  './images/games/street-fighter.png',
-  './images/games/fnaf-1.png',
-  './images/games/fnaf-2.png',
-  './images/games/fnaf-3.png',
-  './images/games/fnaf-4.png',
-  './images/games/fnaf-sl.png',
-  './images/games/fnaf-ucn.png',
-  './images/games/fnaf-ps.png',
+  './images/games/call-of-gruty.png',
+  './images/games/rocket-ball.png',
   './images/games/fnaf-nw.png',
   './images/games/fnaf-mp.png',
   './images/games/kingdom-forgotten-seas.png',
@@ -44,9 +30,7 @@ const CORE = [
   './images/games/emergency-strike.png',
   './images/games/apex-kart.png',
   './images/games/zona-cero.png',
-  './images/games/minecraft.png',
-  './images/games/grand-theft-voxel.png',
-  './images/games/axcos.png'
+  './images/games/grand-theft-voxel.png'
 ];
 
 self.addEventListener('install', (e) => {

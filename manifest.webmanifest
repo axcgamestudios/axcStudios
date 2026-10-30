@@ -1,7 +1,7 @@
 {
   "name": "axcStudios — Estudio de juegos web",
   "short_name": "axcStudios",
-  "description": "Estudio independiente de videojuegos web: Games Store con más de 20 títulos gratis y axcOS, el sistema operativo web.",
+  "description": "Estudio independiente de videojuegos web: Games Store con 10 títulos gratis que corres en el navegador.",
   "id": "axcstudios-main",
   "start_url": "./index.html?src=pwa",
   "scope": "./",
