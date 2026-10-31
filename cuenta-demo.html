@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo — Sistema de Cuentas axc en cualquier página</title>
+<title>Demo — axc Account System on any page</title>
 <!-- ============================================================================
   EJEMPLO MÍNIMO: cómo agregar el Sistema de Cuentas axc a CUALQUIER página,
   incluso de OTRO repositorio u otro dominio github.io.
@@ -29,16 +29,16 @@ code{color:#38e8ff;font-size:.78rem}
 </head>
 <body>
 <div class="card">
-  <h1>🎮 Mi juego con cuenta axc</h1>
-  <p>Página de ejemplo: esta web <strong>no es de axcStudios</strong>, pero usa el mismo
-  sistema central → la cuenta que creaste en la tienda funciona aquí (SSO real).</p>
+  <h1>🎮 My game with an axc account</h1>
+  <p>Example page: this site <strong>is not from axcStudios</strong>, it just plugs into the same
+  central system → the account you created in the store works here (real SSO).</p>
 
-  <div class="estado fuera" id="estado">Sin sesión: el juego está bloqueado.</div>
+  <div class="estado fuera" id="estado">Not signed in: the game is locked.</div>
 
-  <button class="pri" id="btnJugar">▶ Jugar (requiere cuenta)</button>
-  <button class="gho" id="btnCuenta">👤 Mi cuenta</button>
+  <button class="pri" id="btnJugar">▶ Play (account required)</button>
+  <button class="gho" id="btnCuenta">👤 My account</button>
 
-  <p style="margin-top:16px">Código de esta página: solo 2 scripts + 10 líneas. Ver
+  <p style="margin-top:16px">This page’s code: just 2 scripts + 10 lines. See
   <code>SISTEMA-CUENTAS.md</code>.</p>
 </div>
 
@@ -53,17 +53,17 @@ function actualizar(usuario) {
   const e = document.getElementById('estado');
   if (usuario) {
     e.className = 'estado dentro';
-    e.textContent = '✓ Sesión iniciada como ' + usuario.u + ' — ¡a jugar!';
+    e.textContent = '✓ Signed in as ' + usuario.u + ' — let’s play!';
   } else {
     e.className = 'estado fuera';
-    e.textContent = 'Sin sesión: el juego está bloqueado.';
+    e.textContent = 'Not signed in: the game is locked.';
   }
 }
 
 /* 3) PROTEGER CONTENIDO */
 document.getElementById('btnJugar').addEventListener('click', () => {
   if (!AXC.state.user) return AXC_UI.openAuth('login');   // pide cuenta (login o signup)
-  alert('¡A jugar, ' + AXC.state.user.u + '!');
+  alert('Let’s play, ' + AXC.state.user.u + '!');
 });
 document.getElementById('btnCuenta').addEventListener('click', () => AXC_UI.openAuth('login'));
 

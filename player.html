@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jugar — axcStudios Games</title>
-<meta name="description" content="Reproductor de juegos de axcStudios: juega dentro de la app instalada, a pantalla completa.">
+<title>Play — axcStudios Games</title>
+<meta name="description" content="The axcStudios game player: play inside the installed app, full screen.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="images/store-icon-192.png" type="image/png">
 <link rel="manifest" href="manifest-store.webmanifest">
@@ -65,16 +65,16 @@ iframe{width:100%;height:100%;border:0;display:block;background:#06070d}
 <body>
 
 <div class="topbar" id="topbar">
-  <button class="back" id="backBtn">← Tienda</button>
+  <button class="back" id="backBtn">← Store</button>
   <div class="gt" id="gt"><img id="gImg" src="" alt=""><b id="gTitle"></b><span id="gGenre"></span></div>
-  <button class="fs" id="fsBtn">⛶ Pantalla completa</button>
+  <button class="fs" id="fsBtn">⛶ Full screen</button>
 </div>
 
 <div id="frameWrap">
-  <iframe id="frame" src="" title="Juego" allow="autoplay; fullscreen; gamepad; fullscreen; clipboard-read; clipboard-write; microphone"></iframe>
+  <iframe id="frame" src="" title="Game" allow="autoplay; fullscreen; gamepad; fullscreen; clipboard-read; clipboard-write; microphone"></iframe>
 </div>
 
-<div class="loading" id="loading"><div class="spin"></div><b>Arrancando el juego…</b></div>
+<div class="loading" id="loading"><div class="spin"></div><b>Starting the game…</b></div>
 
 <div class="gate" id="gate">
   <div class="gate-card">
@@ -110,9 +110,9 @@ document.getElementById('fsBtn').addEventListener('click', () => {
 });
 
 if (!game) {
-  document.getElementById('gateTitle').textContent = 'Juego no encontrado';
-  document.getElementById('gateText').textContent = 'El enlace no corresponde a ningún juego del catálogo. Vuelve a la tienda y elige uno.';
-  document.getElementById('gateActs').innerHTML = '<button class="btn btn-primary" onclick="location.href=\'store.html\'">← Volver a la tienda</button>';
+  document.getElementById('gateTitle').textContent = 'Game not found';
+  document.getElementById('gateText').textContent = 'This link does not match any game in the catalog. Head back to the store and pick one.';
+  document.getElementById('gateActs').innerHTML = '<button class="btn btn-primary" onclick="location.href=\'store.html\'">← Back to the store</button>';
   document.getElementById('gateImg').src = 'images/store-icon-512.png';
   document.getElementById('gate').classList.add('show');
   document.getElementById('loading').classList.add('off');
@@ -141,11 +141,11 @@ function refresh() {
   }
   document.getElementById('loading').classList.add('off');
   gate.classList.add('show');
-  document.getElementById('gateTitle').textContent = game.title + ' es para miembros';
-  document.getElementById('gateText').textContent = 'Inicia sesión con tu cuenta axc para jugar. La misma cuenta te sirve en toda la tienda y cualquier página axc.';
+  document.getElementById('gateTitle').textContent = game.title + ' is for members';
+  document.getElementById('gateText').textContent = 'Sign in with your axc account to play. The same account works across the whole store and any axc page.';
   document.getElementById('gateActs').innerHTML =
-    '<button class="btn btn-primary" id="gSignup">✨ Crear cuenta</button>' +
-    '<button class="btn btn-ghost" id="gLogin">Ya tengo cuenta</button>';
+    '<button class="btn btn-primary" id="gSignup">✨ Create account</button>' +
+    '<button class="btn btn-ghost" id="gLogin">I already have an account</button>';
   document.getElementById('gSignup').addEventListener('click', () => AXC_UI.openAuth('signup'));
   document.getElementById('gLogin').addEventListener('click', () => AXC_UI.openAuth('login'));
 }

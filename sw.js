@@ -1,7 +1,7 @@
 /* axcStudios — Service Worker
    Da soporte PWA (instalación OPCIONAL como app) a las 2 apps del repo:
    index.html (sitio) y store.html (tienda). */
-const CACHE = 'axcstudios-v6';
+const CACHE = 'axcstudios-v7';
 const CORE = [
   './',
   './index.html',
@@ -21,14 +21,14 @@ const CORE = [
   './images/store-icon-192.png',
   './images/store-icon-512.png',
   './images/store-icon-maskable-512.png',
-  './images/games/call-of-gruty.png',
-  './images/games/rocket-ball.png',
-  './images/games/fnaf-nw.png',
-  './images/games/fnaf-mp.png',
-  './images/games/kingdom-forgotten-seas.png',
-  './images/games/f1-the-game.png',
-  './images/games/emergency-strike.png',
-  './images/games/apex-kart.png',
+  './images/games/warzone-ocean-siege.jpg',
+  './images/games/rocket-ball.jpg',
+  './images/games/lost-pizzeria-nw.jpg',
+  './images/games/lost-pizzeria-mp.png',
+  './images/games/kingdom-forgotten-seas.jpg',
+  './images/games/velocitygp.jpg',
+  './images/games/emergency-strike.jpg',
+  './images/games/apex-kart.jpg',
   './images/games/zona-cero.png',
   './images/games/grand-theft-voxel.png'
 ];

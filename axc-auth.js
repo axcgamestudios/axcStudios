@@ -110,7 +110,7 @@ window.AXC = (function () {
         } catch (e) { last = e; }
         await sleep(400 * (i + 1));
       }
-      throw last || new Error('textdb inalcanzable');
+      throw last || new Error('textdb unreachable');
     }
   };
   async function dbHealth() {
@@ -177,14 +177,14 @@ window.AXC = (function () {
 
   async function signup({ user, mail, pass }) {
     const u = normUser(user), m = String(mail || '').trim(), p = String(pass || '');
-    if (!validUser(u)) return { ok: false, error: 'El usuario debe tener 3-16 caracteres (letras, números o _)' };
-    if (!validMail(m)) return { ok: false, error: 'Escribe un correo válido' };
-    if (p.length < 6) return { ok: false, error: 'La contraseña debe tener al menos 6 caracteres' };
+    if (!validUser(u)) return { ok: false, error: 'Username must be 3-16 characters (letters, numbers or _)' };
+    if (!validMail(m)) return { ok: false, error: 'Enter a valid email' };
+    if (p.length < 6) return { ok: false, error: 'Password must be at least 6 characters' };
     if (state.db === null) await dbHealth();
     let rec = null;
     try { rec = await getRecord(u); }
-    catch (e) { return { ok: false, error: 'No se pudo conectar con el servidor de cuentas. Revisa tu conexión e inténtalo de nuevo.' }; }
-    if (rec) return { ok: false, error: 'Ese nombre de usuario ya está en uso. Prueba otro.' };
+    catch (e) { return { ok: false, error: 'Could not reach the account server. Check your connection and try again.' }; }
+    if (rec) return { ok: false, error: 'That username is already taken. Try another one.' };
 
     const salt = b64e(crypto.getRandomValues(new Uint8Array(16)));
     const k = await pbkdf2b64(p, salt, CFG.pbkdf2Iters);
@@ -206,10 +206,10 @@ window.AXC = (function () {
   /* entrega del código por todos los canales reales disponibles */
   async function sendCode() {
     const p = pending();
-    if (!p) return { ok: false, error: 'No hay un registro en curso' };
-    if (Date.now() - p.ts > CFG.codeTTL) return { ok: false, error: 'El código expiró. Vuelve a crear tu cuenta.' };
+    if (!p) return { ok: false, error: 'There is no signup in progress' };
+    if (Date.now() - p.ts > CFG.codeTTL) return { ok: false, error: 'The code expired. Create your account again.' };
     const env = {
-      v: 1, f: 'cuentas@axc.st', to: p.m, sub: 'Tu código de verificación axcStudios',
+      v: 1, f: 'cuentas@axc.st', to: p.m, sub: 'Your axcStudios verification code',
       ts: Date.now(), exp: p.ts + CFG.codeTTL, d: p.sealed
     };
     const jobs = [];
@@ -221,9 +221,9 @@ window.AXC = (function () {
 
     /* canal 2 — correo real al buzón del usuario (formsubmit.co, mejor esfuerzo) */
     if (CFG.formsubmit && validMail(p.m)) {
-      const body = '_subject=' + encodeURIComponent('axcStudios — Código de verificación') +
-        '&message=' + encodeURIComponent('Hola ' + p.u + ', tu código de verificación es ' + unseal(p.sealed, p.secret) +
-          '. Vence en 15 minutos. Si no creaste esta cuenta, ignora este correo.') + '&_captcha=false';
+      const body = '_subject=' + encodeURIComponent('axcStudios — Verification code') +
+        '&message=' + encodeURIComponent('Hi ' + p.u + ', your verification code is ' + unseal(p.sealed, p.secret) +
+          '. It expires in 15 minutes. If you did not create this account, ignore this email.') + '&_captcha=false';
       for (const ep of ['https://formsubmit.co/ajax/', 'https://formsubmit.co/']) {
         jobs.push(fetch(ep + encodeURIComponent(p.m), {
           method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body
@@ -235,7 +235,7 @@ window.AXC = (function () {
     (async () => {
       try {
         await fetch(CFG.ntfyBase + 'axcnet-' + (await sha256hex(p.u)).slice(0, 12), {
-          method: 'POST', body: 'axcStudios — código de verificación: ' + p.sealed
+          method: 'POST', body: 'axcStudios — verification code: ' + p.sealed
         });
       } catch (e) { }
     })();
@@ -247,7 +247,7 @@ window.AXC = (function () {
     const mailOk = await mailJob;
     if (!mailOk) {
       /* el buzón no pudo recibir el sobre: hay que decirlo (antes se ocultaba) */
-      return { ok: false, error: 'El servidor de correo axc no respondió. Espera unos segundos y pulsa Reenviar código.' };
+      return { ok: false, error: 'The axc mail server did not respond. Wait a few seconds and press Resend code.' };
     }
     return { ok: true, sent: true, mail: p.m };
   }
@@ -269,24 +269,24 @@ window.AXC = (function () {
 
   async function verify(codeIn) {
     const p = pending();
-    if (!p) return { ok: false, error: 'No hay un registro en curso' };
-    if (Date.now() - p.ts > CFG.codeTTL) return { ok: false, error: 'El código expiró. Vuelve a crear tu cuenta.' };
+    if (!p) return { ok: false, error: 'There is no signup in progress' };
+    if (Date.now() - p.ts > CFG.codeTTL) return { ok: false, error: 'The code expired. Create your account again.' };
     const code = String(codeIn || '').replace(/\D/g, '');
-    if (code.length !== 6) return { ok: false, error: 'Escribe el código de 6 dígitos' };
+    if (code.length !== 6) return { ok: false, error: 'Enter the 6-digit code' };
     const h = await sha256hex(code + ':' + p.cs);
     if (h !== p.ch) {
       p.tries++;
       setPending(p);
-      if (p.tries >= CFG.maxTries) return { ok: false, error: 'Demasiados intentos. Vuelve a crear tu cuenta.' };
-      return { ok: false, error: 'Código incorrecto. Te quedan ' + (CFG.maxTries - p.tries) + ' intentos.' };
+      if (p.tries >= CFG.maxTries) return { ok: false, error: 'Too many attempts. Create your account again.' };
+      return { ok: false, error: 'Wrong code. You have ' + (CFG.maxTries - p.tries) + ' attempts left.' };
     }
     /* el usuario sigue libre (nadie lo tomó mientras tanto) */
     try {
       const rec = await getRecord(p.u);
-      if (rec) { $local.removeItem('axc_pending'); return { ok: false, error: 'Ese usuario fue registrado por otra persona. Vuelve a empezar con otro nombre.' }; }
+      if (rec) { $local.removeItem('axc_pending'); return { ok: false, error: 'That username was registered by someone else. Start again with another name.' }; }
       await putRecord({ v: 1, u: p.u, m: p.m, s: p.s, k: p.k, i: p.i, t: Date.now() });
     } catch (e) {
-      return { ok: false, error: 'No se pudo guardar tu cuenta en el servidor. Comprueba tu conexión y pulsa Verificar de nuevo.' };
+      return { ok: false, error: 'Could not save your account to the server. Check your connection and press Verify again.' };
     }
     const u = p.u, m = p.m;
     $local.removeItem('axc_pending');
@@ -300,16 +300,16 @@ window.AXC = (function () {
   /* ---------------- inicio de sesión ---------------- */
   async function login({ user, pass }) {
     const u = normUser(user), p = String(pass || '');
-    if (!u || !p) return { ok: false, error: 'Escribe tu usuario y contraseña' };
+    if (!u || !p) return { ok: false, error: 'Enter your username and password' };
     let rec = null, fromCache = false;
     try { rec = await getRecord(u); } catch (e) { }
     if (!rec) { rec = await cachedRecord(u); fromCache = !!rec; }
-    if (!rec) return { ok: false, error: 'Ese usuario no existe. ¿Quieres crear una cuenta?' };
+    if (!rec) return { ok: false, error: 'That username does not exist. Want to create an account?' };
     let k;
-    try { k = await pbkdf2b64(p, rec.s, rec.i || CFG.pbkdf2Iters); } catch (e) { return { ok: false, error: 'Tu navegador no soporta el cifrado necesario (WebCrypto).' }; }
-    if (k !== rec.k) return { ok: false, error: 'Contraseña incorrecta' };
+    try { k = await pbkdf2b64(p, rec.s, rec.i || CFG.pbkdf2Iters); } catch (e) { return { ok: false, error: 'Your browser does not support the required encryption (WebCrypto).' }; }
+    if (k !== rec.k) return { ok: false, error: 'Wrong password' };
     const chk = await recCheck(rec.u, rec.k);
-    if (rec.c && chk !== rec.c) return { ok: false, error: 'La cuenta está dañada o fue manipulada. Contacta a axcStudios.' };
+    if (rec.c && chk !== rec.c) return { ok: false, error: 'The account is damaged or was tampered with. Contact axcStudios.' };
     if (!fromCache) { try { $local.setItem('axc_rec_' + rec.u, JSON.stringify(rec)); } catch (e) { } }
     await saveSession(rec.u, rec.m);
     Net.send({ axc: 1, t: 'sync', user: rec.u });

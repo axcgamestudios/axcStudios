@@ -223,7 +223,7 @@ window.AXC_UI = (function () {
   });
   addEventListener('appinstalled', () => {
     deferredPrompt = null;
-    toast('🎉 App instalada. ¡Búscala en tu escritorio o pantalla de inicio!');
+    toast('🎉 App installed. Look for it on your desktop or home screen!');
     dispatchEvent(new CustomEvent('axc:pulse'));
     closeInstall();
   });
@@ -247,19 +247,19 @@ window.AXC_UI = (function () {
   }
   const INSTALL_STEPS = {
     desktop: [
-      { t: 'Es <strong>opcional</strong>: en <strong>Chrome</strong> o <strong>Edge</strong> pulsa el icono ⤓ de la barra de direcciones y elige <strong>«Instalar página como aplicación»</strong>.' },
-      { t: 'Si no lo ves: menú <strong>⋮</strong> → <strong>«Aplicaciones» / «Instalar página como aplicación»</strong>.' },
-      { t: 'La app quedará en tu escritorio y menú de inicio. Todo funciona igual sin instalar: los juegos corren en la página.' }
+      { t: 'It’s <strong>optional</strong>: in <strong>Chrome</strong> or <strong>Edge</strong>, click the ⤓ icon in the address bar and choose <strong>“Install page as app”</strong>.' },
+      { t: 'Don’t see it? Menu <strong>⋮</strong> → <strong>“Apps” / “Install page as app”</strong>.' },
+      { t: 'The app lands on your desktop and start menu. Everything works the same without installing: the games run on the page.' }
     ],
     android: [
-      { t: 'Es <strong>opcional</strong>: en <strong>Chrome</strong>, toca el menú <strong>⋮</strong> de arriba a la derecha.' },
-      { t: 'Pulsa <strong>«Instalar aplicación»</strong> (o «Añadir a pantalla de inicio»).' },
-      { t: 'El icono quedará junto a tus demás apps. Sin instalar, todo sigue funcionando en la página.' }
+      { t: 'It’s <strong>optional</strong>: in <strong>Chrome</strong>, tap the <strong>⋮</strong> menu at the top right.' },
+      { t: 'Tap <strong>“Install app”</strong> (or “Add to Home screen”).' },
+      { t: 'The icon joins your other apps. Without installing, everything keeps working on the page.' }
     ],
     ios: [
-      { t: 'Es <strong>opcional</strong>: abre la página en <strong>Safari</strong>.' },
-      { t: 'Toca el botón <strong>Compartir</strong> (cuadrado con flecha hacia arriba).' },
-      { t: 'Elige <strong>«Añadir a pantalla de inicio»</strong>. Todo funciona igual en la página sin instalar.' }
+      { t: 'It’s <strong>optional</strong>: open the page in <strong>Safari</strong>.' },
+      { t: 'Tap the <strong>Share</strong> button (square with an up arrow).' },
+      { t: 'Choose <strong>“Add to Home Screen”</strong>. Everything works the same on the page without installing.' }
     ]
   };
 
@@ -269,21 +269,21 @@ window.AXC_UI = (function () {
     instRoot.innerHTML = `
       <div class="axcui-card">
         <button class="axcui-x" data-close>✕</button>
-        <div class="axcui-logo"><img src="${instCfg.icon}" alt=""><div><b>Instalar ${instCfg.name}</b><span>opcional · app nativa del navegador</span></div></div>
+        <div class="axcui-logo"><img src="${instCfg.icon}" alt=""><div><b>Install ${instCfg.name}</b><span>optional · native browser app</span></div></div>
         <div class="axcui-ok" id="axcInstNative" style="display:none"></div>
         <div class="axcui-steps">${INSTALL_STEPS[dev].map((s, i) => `<div class="axcui-step"><div class="axcui-step-n">${i + 1}</div><p>${s.t}</p></div>`).join('')}</div>
-        <button class="axcui-btn" id="axcInstBtn">⚡ Instalar ${instCfg.name} ahora</button>
-        <p class="axcui-note">Instalar es <strong>opcional</strong>: lo añade a tu escritorio como programa, pero los juegos corren perfectamente aquí mismo, en la página.</p>
+        <button class="axcui-btn" id="axcInstBtn">⚡ Install ${instCfg.name} now</button>
+        <p class="axcui-note">Installing is <strong>optional</strong>: it adds the app to your desktop as a program, but the games run perfectly right here, on the page.</p>
       </div>`;
     const nb = $('#axcInstBtn', instRoot);
     const upd = () => {
       const n = $('#axcInstNative', instRoot);
       if (deferredPrompt) {
         n.style.display = 'block';
-        n.innerHTML = '✅ Tu navegador ya validó la app: el botón azul abrirá el <b>diálogo nativo de instalación</b>.';
+        n.innerHTML = '✅ Your browser has validated the app: the blue button opens the <b>native install dialog</b>.';
       } else {
         n.style.display = 'block';
-        n.innerHTML = '⏳ El navegador todavía está validando la app (unos segundos). Puedes usar los pasos de arriba.';
+        n.innerHTML = '⏳ The browser is still validating the app (a few seconds). You can use the steps above.';
       }
     };
     upd();
@@ -304,11 +304,11 @@ window.AXC_UI = (function () {
   let playMsgT = null, playProgT = null, playTO = null, currentGame = null;
 
   const LOAD_MSGS = [
-    'Despertando el motor del juego',
-    'Calibrando controles',
-    'Cargando sprites y sonido',
-    'Sincronizando con la red axc',
-    'Últimos ajustes'
+    'Waking up the game engine',
+    'Calibrating controls',
+    'Loading sprites and sound',
+    'Syncing with the axc network',
+    'Final touches'
   ];
 
   function launchGame(game, fromEl) {
@@ -318,9 +318,9 @@ window.AXC_UI = (function () {
     playRoot.classList.remove('ready');
     playRoot.innerHTML = `
       <div class="axcplay-bar">
-        <button class="axcplay-back" id="axcPlayBack">← Volver</button>
+        <button class="axcplay-back" id="axcPlayBack">← Back</button>
         <div class="axcplay-gt"><img src="${game.img}" alt=""><b>${esc(game.title)}</b><span>${esc(game.genre || '')}</span></div>
-        <a class="axcplay-act" id="axcPlayFull" title="Pantalla completa">⛶</a>
+        <a class="axcplay-act" id="axcPlayFull" title="Full screen">⛶</a>
       </div>
       <div class="axcplay-stage" id="axcPlayStage">
         <div class="axcplay-load">
@@ -329,7 +329,7 @@ window.AXC_UI = (function () {
           <div class="axcplay-rings"><i></i><i></i><i></i></div>
           <div class="axcplay-hero" id="axcPlayHero"><img src="${game.img}" alt="${esc(game.title)}"></div>
           <div class="axcplay-title">${esc(game.title)}</div>
-          <div class="axcplay-sub">${esc(game.genre || '')} · cargando</div>
+          <div class="axcplay-sub">${esc(game.genre || '')} · loading</div>
           <div class="axcplay-prog"><i id="axcPlayFill"></i></div>
           <div class="axcplay-msg" id="axcPlayMsg">${LOAD_MSGS[0]}<b>…</b></div>
         </div>
@@ -386,7 +386,7 @@ window.AXC_UI = (function () {
       const f = $('#axcPlayFill', playRoot);
       if (f) f.style.width = '100%';
       const m = $('#axcPlayMsg', playRoot);
-      if (m) m.innerHTML = '✓ ¡Listo! ¡A jugar!';
+      if (m) m.innerHTML = '✓ Ready! Let’s play!';
       setTimeout(() => playRoot.classList.add('ready'), 420);
       dispatchEvent(new CustomEvent('axc:pulse'));
     }
@@ -417,12 +417,12 @@ window.AXC_UI = (function () {
 
   function dots() {
     const st = AXC.state;
-    const db = st.db === true ? '<span class="axcui-dot on"><i></i>Servidor de cuentas</span>'
-      : st.db === false ? '<span class="axcui-dot"><i style="background:#ff4d6d"></i>Servidor caído</span>'
-        : '<span class="axcui-dot wait"><i></i>Conectando servidor…</span>';
-    const ws = st.ws === 'online' ? '<span class="axcui-dot on"><i></i>Red axc en vivo</span>'
-      : st.ws === 'connecting' ? '<span class="axcui-dot wait"><i></i>Red axc conectando…</span>'
-        : '<span class="axcui-dot"><i></i>Red axc dormida</span>';
+    const db = st.db === true ? '<span class="axcui-dot on"><i></i>Account server</span>'
+      : st.db === false ? '<span class="axcui-dot"><i style="background:#ff4d6d"></i>Server down</span>'
+        : '<span class="axcui-dot wait"><i></i>Connecting server…</span>';
+    const ws = st.ws === 'online' ? '<span class="axcui-dot on"><i></i>axc network live</span>'
+      : st.ws === 'connecting' ? '<span class="axcui-dot wait"><i></i>axc network connecting…</span>'
+        : '<span class="axcui-dot"><i></i>axc network asleep</span>';
     return `<div class="axcui-dots">${db}${ws}</div>`;
   }
 
@@ -431,10 +431,10 @@ window.AXC_UI = (function () {
     authRoot.innerHTML = `
       <div class="axcui-card">
         <button class="axcui-x" data-close>✕</button>
-        <div class="axcui-logo"><img src="images/icon-192.png" alt="axcStudios"><div><b>Cuenta axc</b><span>una cuenta · todas las páginas</span></div></div>
+        <div class="axcui-logo"><img src="images/icon-192.png" alt="axcStudios"><div><b>axc account</b><span>one account · every page</span></div></div>
         <div class="axcui-tabs" id="axcTabs">
-          <button class="axcui-tab" data-t="login">Iniciar sesión</button>
-          <button class="axcui-tab" data-t="signup">Crear cuenta</button>
+          <button class="axcui-tab" data-t="login">Sign in</button>
+          <button class="axcui-tab" data-t="signup">Create account</button>
         </div>
         <div id="axcView"></div>
         ${dots()}
@@ -449,16 +449,16 @@ window.AXC_UI = (function () {
       clearInterval(mailPoll);
       $('#axcView', authRoot).innerHTML = `
         <div class="axcui-err" id="axcErr"></div>
-        <div class="axcui-f"><label>Usuario</label><input id="axcLu" autocomplete="username" spellcheck="false"></div>
-        <div class="axcui-f"><label>Contraseña</label><input id="axcLp" type="password" autocomplete="current-password"></div>
-        <button class="axcui-btn" id="axcLb">Entrar →</button>
-        <p class="axcui-note">La misma cuenta funciona en <strong>todas las páginas de axcStudios</strong> (tienda, juegos y cualquier web con el sistema axc).</p>`;
+        <div class="axcui-f"><label>Username</label><input id="axcLu" autocomplete="username" spellcheck="false"></div>
+        <div class="axcui-f"><label>Password</label><input id="axcLp" type="password" autocomplete="current-password"></div>
+        <button class="axcui-btn" id="axcLb">Sign in →</button>
+        <p class="axcui-note">The same account works on <strong>every axcStudios page</strong> (store, games and any site running the axc system).</p>`;
       const go = async () => {
-        const btn = $('#axcLb', authRoot); btn.disabled = true; btn.textContent = 'Verificando…';
+        const btn = $('#axcLb', authRoot); btn.disabled = true; btn.textContent = 'Verifying…';
         const r = await AXC.login({ user: $('#axcLu', authRoot).value, pass: $('#axcLp', authRoot).value });
-        btn.disabled = false; btn.textContent = 'Entrar →';
-        if (r.ok) { toast('¡Bienvenido, ' + r.user + '! Sesión iniciada'); dispatchEvent(new CustomEvent('axc:pulse')); closeAuth(); }
-        else { const e = $('#axcErr', authRoot); e.style.display = 'block'; e.textContent = r.error; if (/no existe/i.test(r.error)) showTab('signup'); }
+        btn.disabled = false; btn.textContent = 'Sign in →';
+        if (r.ok) { toast('Welcome, ' + r.user + '! Signed in'); dispatchEvent(new CustomEvent('axc:pulse')); closeAuth(); }
+        else { const e = $('#axcErr', authRoot); e.style.display = 'block'; e.textContent = r.error; if (/does not exist|no existe/i.test(r.error)) showTab('signup'); }
       };
       $('#axcLb', authRoot).addEventListener('click', go);
       $('#axcView', authRoot).addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') go(); });
@@ -468,19 +468,19 @@ window.AXC_UI = (function () {
       clearInterval(mailPoll);
       $('#axcView', authRoot).innerHTML = `
         <div class="axcui-err" id="axcErr"></div>
-        <div class="axcui-f"><label>Usuario <span style="opacity:.5">(3-16, letras/números/_)</span></label><input id="axcSu" autocomplete="username" spellcheck="false" placeholder="tu_nombre"></div>
-        <div class="axcui-f"><label>Correo <span style="opacity:.5">(adorno de tu perfil)</span></label><input id="axcSm" type="email" autocomplete="email" placeholder="tucorreo@ejemplo.com"></div>
-        <div class="axcui-f"><label>Contraseña <span style="opacity:.5">(mínimo 6)</span></label><input id="axcSp" type="password" autocomplete="new-password"></div>
-        <button class="axcui-btn" id="axcSb">📨 Enviar código de verificación</button>
-        <p class="axcui-note">Tu código de 6 dígitos llega <strong>al instante al Buzón axc</strong> (lo ves aquí mismo, en grande, automáticamente). Tu contraseña se guarda cifrada (PBKDF2, nunca en claro).</p>`;
+        <div class="axcui-f"><label>Username <span style="opacity:.5">(3-16, letters/numbers/_)</span></label><input id="axcSu" autocomplete="username" spellcheck="false" placeholder="your_name"></div>
+        <div class="axcui-f"><label>Email <span style="opacity:.5">(a profile detail)</span></label><input id="axcSm" type="email" autocomplete="email" placeholder="you@example.com"></div>
+        <div class="axcui-f"><label>Password <span style="opacity:.5">(min 6)</span></label><input id="axcSp" type="password" autocomplete="new-password"></div>
+        <button class="axcui-btn" id="axcSb">📨 Send verification code</button>
+        <p class="axcui-note">Your 6-digit code arrives <strong>instantly in the axc Mailbox</strong> (you see it right here, big, automatically). Your password is stored encrypted (PBKDF2, never in plain text).</p>`;
       const go = async () => {
-        const btn = $('#axcSb', authRoot); btn.disabled = true; btn.textContent = 'Enviando código…';
+        const btn = $('#axcSb', authRoot); btn.disabled = true; btn.textContent = 'Sending code…';
         const r = await AXC.signup({
           user: $('#axcSu', authRoot).value,
           mail: $('#axcSm', authRoot).value,
           pass: $('#axcSp', authRoot).value
         });
-        btn.disabled = false; btn.textContent = '📨 Enviar código de verificación';
+        btn.disabled = false; btn.textContent = '📨 Send verification code';
         if (r.ok) viewSignup2(r); else { const e = $('#axcErr', authRoot); e.style.display = 'block'; e.textContent = r.error; }
       };
       $('#axcSb', authRoot).addEventListener('click', go);
@@ -490,19 +490,19 @@ window.AXC_UI = (function () {
     function viewSignup2(info) {
       resendLeft = 0;
       $('#axcView', authRoot).innerHTML = `
-        <div class="axcui-ok">📨 Código enviado. Vigente <strong>15 minutos</strong>. El Buzón axc de abajo lo <strong>recibe automáticamente en unos segundos</strong> y lo escribe por ti.</div>
+        <div class="axcui-ok">📨 Code sent. Valid for <strong>15 minutes</strong>. The axc Mailbox below <strong>receives it automatically within seconds</strong> and types it for you.</div>
         <div class="axcui-mail waiting" id="axcMailBox">
-          <div class="axcui-mail-h"><span class="dot"></span>✉ BUZÓN AXC · EN VIVO</div>
-          <div class="axcui-mail-b" id="axcMailB"><span class="axcenv">✉️</span>Esperando el correo del servidor…</div>
+          <div class="axcui-mail-h"><span class="dot"></span>✉ AXC MAILBOX · LIVE</div>
+          <div class="axcui-mail-b" id="axcMailB"><span class="axcenv">✉️</span>Waiting for the server mail…</div>
         </div>
-        <div class="axcui-f"><label>Escribe el código de 6 dígitos</label>
+        <div class="axcui-f"><label>Enter the 6-digit code</label>
           <div class="axcui-otp" id="axcOtp">${[0, 1, 2, 3, 4, 5].map(i => `<input maxlength="1" inputmode="numeric" data-i="${i}">`).join('')}</div>
         </div>
         <div class="axcui-err" id="axcErr"></div>
-        <button class="axcui-btn" id="axcVb">✓ Verificar y crear cuenta</button>
+        <button class="axcui-btn" id="axcVb">✓ Verify and create account</button>
         <div style="display:flex;gap:10px;margin-top:10px">
-          <button class="axcui-btn ghost" id="axcRb" style="font-size:13.5px">Reenviar código</button>
-          <button class="axcui-btn ghost" id="axcCb" style="font-size:13.5px">Cambiar datos</button>
+          <button class="axcui-btn ghost" id="axcRb" style="font-size:13.5px">Resend code</button>
+          <button class="axcui-btn ghost" id="axcCb" style="font-size:13.5px">Change details</button>
         </div>`;
       /* OTP */
       const otp = $('#axcOtp', authRoot);
@@ -533,17 +533,17 @@ window.AXC_UI = (function () {
         if (m) {
           box.classList.remove('waiting');
           box.classList.add('arrived');
-          b.innerHTML = `📬 <b>¡Código recibido!</b> · de <b>${esc(m.from)}</b> · hace un instante`;
+          b.innerHTML = `📬 <b>Code received!</b> · from <b>${esc(m.from)}</b> · just now`;
           b.insertAdjacentHTML('afterend',
             `<div class="axccode">${String(m.code).split('').map(d => `<i>${d}</i>`).join('')}</div>
-             <div style="text-align:center;font-size:12px;color:#7ff0b0;margin-bottom:4px">✓ Se escribió automáticamente abajo</div>`);
+             <div style="text-align:center;font-size:12px;color:#7ff0b0;margin-bottom:4px">✓ Typed automatically below</div>`);
           setCode(m.code);
           clearInterval(mailPoll); mailPoll = null;
-          toast('📬 Código recibido en el Buzón axc ✓');
+          toast('📬 Code received in the axc Mailbox ✓');
         } else if (!box.classList.contains('arrived')) {
           const secs = Math.round((Date.now() - (pollMail.t0 || (pollMail.t0 = Date.now()))) / 1000);
-          b.innerHTML = `<span class="axcenv">✉️</span>Esperando el correo del servidor… <span style="opacity:.55">(${secs}s)</span>`;
-          if (secs > 18) b.innerHTML += `<br><span style="font-size:12px;color:#f5b942">¿Tarda más de 20s? Pulsa <b>Reenviar código</b>: el servidor a veces se despierta.</span>`;
+          b.innerHTML = `<span class="axcenv">✉️</span>Waiting for the server mail… <span style="opacity:.55">(${secs}s)</span>`;
+          if (secs > 18) b.innerHTML += `<br><span style="font-size:12px;color:#f5b942">Taking more than 20s? Press <b>Resend code</b>: the server sometimes needs a moment to wake up.</span>`;
         }
       }
       clearInterval(mailPoll);
@@ -552,12 +552,12 @@ window.AXC_UI = (function () {
       pollMail();
 
       async function doVerify() {
-        const btn = $('#axcVb', authRoot); btn.disabled = true; btn.textContent = 'Verificando…';
+        const btn = $('#axcVb', authRoot); btn.disabled = true; btn.textContent = 'Verifying…';
         const r = await AXC.verify(code());
-        btn.disabled = false; btn.textContent = '✓ Verificar y crear cuenta';
+        btn.disabled = false; btn.textContent = '✓ Verify and create account';
         if (r.ok) {
           clearInterval(mailPoll); mailPoll = null;
-          toast('🎉 ¡Cuenta creada, ' + r.user + '! Sesión iniciada');
+          toast('🎉 Account created, ' + r.user + '! Signed in');
           dispatchEvent(new CustomEvent('axc:pulse'));
           closeAuth();
         } else {
@@ -572,18 +572,18 @@ window.AXC_UI = (function () {
         if (r.ok) {
           const box = $('#axcMailBox', authRoot), b = $('#axcMailB', authRoot);
           if (box) { box.classList.remove('arrived'); box.classList.add('waiting'); const cd = box.querySelector('.axccode'); if (cd) cd.remove(); const note = box.querySelector('div[style]'); }
-          if (b) { b.innerHTML = '<span class="axcenv">✉️</span>Esperando el correo del servidor…'; }
+          if (b) { b.innerHTML = '<span class="axcenv">✉️</span>Waiting for the server mail…'; }
           pollMail.t0 = Date.now();
           clearInterval(mailPoll); mailPoll = setInterval(pollMail, 2000); pollMail();
           resendLeft = 45;
           const btn = $('#axcRb', authRoot);
           const tick = () => {
-            if (resendLeft <= 0) { clearTimeout(resendT); btn.textContent = 'Reenviar código'; btn.disabled = false; return; }
-            btn.textContent = 'Reenviar en ' + resendLeft + 's'; btn.disabled = true; resendLeft--;
+            if (resendLeft <= 0) { clearTimeout(resendT); btn.textContent = 'Resend code'; btn.disabled = false; return; }
+            btn.textContent = 'Resend in ' + resendLeft + 's'; btn.disabled = true; resendLeft--;
             resendT = setTimeout(tick, 1000);
           };
           tick();
-          toast('Código reenviado ✓');
+          toast('Code resent ✓');
         } else { const e = $('#axcErr', authRoot); e.style.display = 'block'; e.textContent = r.error; }
       });
     }
@@ -609,7 +609,7 @@ window.AXC_UI = (function () {
     const u = AXC.state.user;
     if (menuEl) { menuEl.remove(); menuEl = null; }
     if (!u) {
-      chipEl.innerHTML = `<button class="axcui-chip" id="axcChipBtn">👤 Iniciar sesión</button>`;
+      chipEl.innerHTML = `<button class="axcui-chip" id="axcChipBtn">👤 Sign in</button>`;
       $('#axcChipBtn').addEventListener('click', () => openAuth('login'));
       return;
     }
@@ -617,12 +617,12 @@ window.AXC_UI = (function () {
     chipEl.innerHTML = `<button class="axcui-chip" id="axcChipBtn"><span class="axcui-ava">${esc(u.u[0])}</span>${esc(u.u)} ▾</button>`;
     menuEl = document.createElement('div');
     menuEl.className = 'axcui-menu';
-    menuEl.innerHTML = `<div class="info">Sesión: <b>${esc(u.u)}</b><br>${esc(u.m || '')}<br><span style="opacity:.6">Cuenta válida en todas las páginas axc</span></div>
-      <button id="axcLogout">Cerrar sesión</button>`;
+    menuEl.innerHTML = `<div class="info">Signed in as <b>${esc(u.u)}</b><br>${esc(u.m || '')}<br><span style="opacity:.6">Account valid on every axc page</span></div>
+      <button id="axcLogout">Sign out</button>`;
     chipEl.appendChild(menuEl);
     $('#axcChipBtn').addEventListener('click', e => { e.stopPropagation(); menuEl.classList.toggle('open'); });
     document.addEventListener('click', () => menuEl.classList.remove('open'));
-    $('#axcLogout').addEventListener('click', () => { AXC.logout(); toast('Sesión cerrada'); menuEl.classList.remove('open'); });
+    $('#axcLogout').addEventListener('click', () => { AXC.logout(); toast('Signed out'); menuEl.classList.remove('open'); });
   }
 
   /* ================== INIT ================== */

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>axcStudios Games — Tienda de juegos</title>
-<meta name="description" content="La tienda de juegos de axcStudios como app: 10 juegos gratis, buscador, filtros y reproductor integrado.">
+<title>axcStudios Games — Game Store</title>
+<meta name="description" content="The axcStudios game store as an app: 10 free games, search, filters and a built-in player.">
 <meta name="theme-color" content="#1b5fd9">
 <link rel="icon" href="images/store-icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="images/store-icon-192.png">
@@ -138,10 +138,10 @@ footer a:hover{color:var(--accent)}
     <span>axc<em>Studios</em> Games</span>
     <span class="tag">app</span>
   </a>
-  <span class="net-pill" id="netPill"><i></i><span id="netLabel">red axc…</span></span>
+  <span class="net-pill" id="netPill"><i></i><span id="netLabel">axc network…</span></span>
   <div class="spacer"></div>
-  <button class="btn-home" onclick="location.href='index.html'">← Estudio</button>
-  <button class="install-btn" id="installBtn" data-axc-install-ready>⤓ <span>Instalar esta app</span></button>
+  <button class="btn-home" onclick="location.href='index.html'">← Studio</button>
+  <button class="install-btn" id="installBtn" data-axc-install-ready>⤓ <span>Install this app</span></button>
   <div id="accountChip"></div>
 </header>
 
@@ -149,29 +149,29 @@ footer a:hover{color:var(--accent)}
   <div class="store-hero">
     <div>
       <div class="kicker">Games Store · axcStudios</div>
-      <h1>Tu tienda de juegos web</h1>
-      <p>10 juegos gratis del estudio. Con sesión iniciada ves el catálogo y <strong>los juegos corren aquí mismo</strong>, a pantalla completa — instalar la app es <strong>opcional</strong>.</p>
+      <h1>Your web game store</h1>
+      <p>10 free games from the studio. Signed in, you see the catalog and <strong>the games run right here</strong>, full screen — installing the app is <strong>optional</strong>.</p>
     </div>
     <div class="hbadges">
-      <span class="hbadge" id="countBadge">10 juegos</span>
-      <span class="hbadge">🔒 <b>Sesión</b> para ver</span>
-      <span class="hbadge">🎮 <b>Juega aquí mismo</b></span>
+      <span class="hbadge" id="countBadge">10 games</span>
+      <span class="hbadge">🔒 <b>Sign in</b> to view</span>
+      <span class="hbadge">🎮 <b>Play right here</b></span>
     </div>
   </div>
 
   <div class="banner-install" id="bannerInstall">
-    <b>📦 ¿La quieres en tu escritorio?</b>
-    <p>Es <strong>opcional</strong>: instala <strong>axcStudios Games</strong> como aplicación y se abrirá a pantalla completa, sin barra del navegador. Sin instalar, todo sigue funcionando aquí.</p>
-    <button class="btn btn-primary" id="bannerBtn">⤓ Instalar ahora</button>
+    <b>📦 Want it on your desktop?</b>
+    <p>It's <strong>optional</strong>: install <strong>axcStudios Games</strong> as an application and it opens full screen with no browser bar. Without installing, everything keeps working right here.</p>
+    <button class="btn btn-primary" id="bannerBtn">⤓ Install now</button>
   </div>
 
   <div class="tools">
     <div class="search">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="search" type="search" placeholder="Buscar juegos…" autocomplete="off">
+      <input id="search" type="search" placeholder="Search games…" autocomplete="off">
     </div>
     <div class="chips" id="filters">
-      <button class="chip on" data-f="all">Todos</button>
+      <button class="chip on" data-f="all">All</button>
       <button class="chip" data-f="arcade">Arcade</button>
       <button class="chip" data-f="fnaf">The Lost Pizzeria</button>
       <button class="chip" data-f="axc">axc Originals</button>
@@ -182,7 +182,7 @@ footer a:hover{color:var(--accent)}
 </div>
 
 <footer>
-  axcStudios Games · tienda oficial del estudio — <a onclick="location.href='index.html'">volver al estudio</a> · <a onclick="AXC_UI.openInstall({app:'store',name:'axcStudios Games',icon:'images/store-icon-512.png'})">instalar (opcional)</a>
+  axcStudios Games · the studio's official store — <a onclick="location.href='index.html'">back to the studio</a> · <a onclick="AXC_UI.openInstall({app:'store',name:'axcStudios Games',icon:'images/store-icon-512.png'})">install (optional)</a>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -211,9 +211,9 @@ function net() {
   const pill = document.getElementById('netPill'), lab = document.getElementById('netLabel');
   const s = AXC.state;
   pill.classList.remove('on', 'wait');
-  if (s.ws === 'online') { pill.classList.add('on'); lab.textContent = s.presence > 1 ? s.presence + ' en línea' : 'red axc activa'; }
-  else if (s.ws === 'connecting') { pill.classList.add('wait'); lab.textContent = 'conectando…'; }
-  else lab.textContent = 'red dormida';
+  if (s.ws === 'online') { pill.classList.add('on'); lab.textContent = s.presence > 1 ? s.presence + ' online' : 'axc network live'; }
+  else if (s.ws === 'connecting') { pill.classList.add('wait'); lab.textContent = 'connecting…'; }
+  else lab.textContent = 'network asleep';
 }
 
 function refresh() {
@@ -233,7 +233,7 @@ function render() {
       AXC_UI.launchGame(g, card);
     }
   });
-  document.getElementById('countBadge').textContent = window.AXC_GAMES.length + ' juegos';
+  document.getElementById('countBadge').textContent = window.AXC_GAMES.length + ' games';
 }
 document.getElementById('filters').querySelectorAll('.chip').forEach(b => {
   b.addEventListener('click', () => {
